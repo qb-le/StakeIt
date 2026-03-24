@@ -49,18 +49,19 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -p "${{ secrets.SERVER_PORT }}" -H "${{ secrets.SERVER_HOST }}" >> ~/.ssh/known_hosts
 
-      - name: Deploy to EduCloud VM
+      - name: Deploy to VM
         run: |
           ssh -p "${{ secrets.SERVER_PORT }}" "${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}" << 'EOF'
             set -e
+
             cd /home/ubuntu/StakeIt
             git fetch origin
-            git checkout main
-            git pull origin main
+            git checkout master
+            git pull origin master
 
             cd Backend
             chmod +x gradlew
-            ./gradlew build --no-daemon
+            ./gradlew build
 
             sudo systemctl restart stakeit.service
             sudo systemctl status stakeit.service --no-pager
