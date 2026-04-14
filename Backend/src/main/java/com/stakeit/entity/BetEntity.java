@@ -1,18 +1,16 @@
 package com.stakeit.entity;
 
+import lombok.Data;
 
-public class BetEntity{
-    private int id;
-    private int createdBy;
-    private double betPrice;
-    private int totalGamblersJoined;
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 
-    public BetEntity(Integer id, Integer createdBy, Double totalBetAmount, Integer totalGamblersJoined) {
-        this.id = id;
-        this.createdBy = createdBy;
-        this.betPrice = totalBetAmount;
-        this.totalGamblersJoined = totalGamblersJoined;
-    }
+@Data
+public class BetEntity {
+    private Integer id;
+    private Integer createdBy;
+    private String title;
+    private String description;
+    private BigDecimal betPrice;
+    private OffsetDateTime createdAt;
 }
-
-
