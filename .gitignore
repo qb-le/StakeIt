@@ -1,4 +1,5 @@
 src/main/resources/application-dev.properties
+
 # IntelliJ / IDE
 .idea/
 *.iml
@@ -6,6 +7,38 @@ out/
 
 # VS Code
 .vscode/
+
+# Visual Studio / ASP.NET
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build folders
+bin/
+obj/
+[Bb]uild/
+[Oo]bj/
+[Rr]elease/
+[Dd]ebug/
+x64/
+x86/
+
+# ASP.NET Core publish output
+publish/
+wwwroot/dist/
+wwwroot/lib/
+
+# NuGet
+*.nupkg
+**/packages/*
+!**/packages/build/
+*.nuget.props
+*.nuget.targets
+
+# Rider
+.idea/
 
 # OS files
 .DS_Store
@@ -15,20 +48,32 @@ Thumbs.db
 .gradle/
 build/
 
+# Maven / Spring Boot
+target/
+
 # Java
 *.class
 
 # Logs
 *.log
+logs/
+*.pid
+*.seed
+*.pid.lock
 
 # Environment / secrets
 .env
 .env.*
 application-local.properties
 application-secret.properties
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.local.json
+secrets.json
 
-# Spring Boot
-target/
+# Spring / Java config
+src/main/resources/application-*.properties
+!src/main/resources/application.properties
 
 # Frontend
 node_modules/
@@ -48,3 +93,20 @@ pnpm-debug.log*
 # Temporary files
 *.tmp
 *.swp
+*.temp
+
+# Test results / coverage
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+
+# Entity Framework / local DB files
+*.mdf
+*.ldf
+*.db
+*.sqlite
+*.sqlite3
+
+# Azure / local tooling
+.localhistory/
