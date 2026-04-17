@@ -1,51 +1,45 @@
-package com.stakeit.Repo.Implementation;
+package com.stakeit.repository;
+
+import static com.stakeit.jooq.Tables.BET;
 
 import com.stakeit.Repo.BetRepository;
 import com.stakeit.entity.BetEntity;
-import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
-import org.jooq.Record;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
+import java.util.List;
 
 @Repository
-@RequiredArgsConstructor
 public class BetRepositoryImpl implements BetRepository {
 
     private final DSLContext dsl;
 
-    public BetEntity createBet(BetEntity bet) {
-        Record record = dsl.fetchOne("""
-            INSERT INTO bet (created_by, title, description, bet_price)
-            VALUES (?, ?, ?, ?)
-            RETURNING
-                id,
-                created_by,
-                title,
-                description,
-                bet_price,
-                created_at
-            """,
-                bet.getCreatedBy(),
-                bet.getTitle(),
-                bet.getDescription(),
-                bet.getBetPrice()
-        );
+    public BetRepositoryImpl(DSLContext dsl) {
+        this.dsl = dsl;
+    }
 
-        if (record == null) {
-            throw new RuntimeException("Failed to create bet");
-        }
+    public List<BetEntity> readAllBets() {
+        return dsl.selectFrom(BET)
+                .orderBy(BET.CREATED_AT.desc())
+                .fetchInto(BetEntity.class);
+    }
 
-        BetEntity savedBet = new BetEntity();
-        savedBet.setId(record.get("id", Integer.class));
-        savedBet.setCreatedBy(record.get("created_by", Integer.class));
-        savedBet.setTitle(record.get("title", String.class));
-        savedBet.setDescription(record.get("description", String.class));
-        savedBet.setBetPrice(record.get("bet_price", BigDecimal.class));
-        savedBet.setCreatedAt(record.get("created_at", OffsetDateTime.class));
+    public List<BetEntity> readOwnBets(Integer userId) {
+        return dsl.selectFrom(BET)
+                .where(BET.CREATED_BY.eq(userId))
+                .orderBy(BET.CREATED_AT.desc())
+                .fetchInto(BetEntity.class);
+    }
 
-        return savedBet;
+    public BetEntity createBet(BetEntity request) {
+        return dsl.insertInto(BET)
+                .set(BET.CREATED_BY, request.getCreatedBy())
+                .set(BET.TITLE, request.getTitle())
+                .set(BET.DESCRIPTION, request.getDescription())
+                .set(BET.BET_PRICE, request.getBetPrice())
+                .set(BET.BET_ENDS_AT, request.getBetEndsAt())
+                .returning()
+                .fetchOneInto(BetEntity.class);
     }
 }
