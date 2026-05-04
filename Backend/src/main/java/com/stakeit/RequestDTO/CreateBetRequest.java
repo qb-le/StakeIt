@@ -11,5 +11,5 @@ public class CreateBetRequest {
     private String title;
     private String description;
     private BigDecimal betPrice;
-    private OffsetDateTime createdAt;
+    private OffsetDateTime betEndsAt;
 }

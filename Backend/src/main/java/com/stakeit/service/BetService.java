@@ -3,22 +3,29 @@ package com.stakeit.service;
 import com.stakeit.Repo.BetRepository;
 import com.stakeit.RequestDTO.CreateBetRequest;
 import com.stakeit.entity.BetEntity;
+import com.stakeit.mapper.BetMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class BetService {
 
     private final BetRepository repository;
+    private final BetMapper betMapper;
 
     public BetEntity createBet(CreateBetRequest request) {
-        BetEntity entityRequest = new BetEntity();
-        entityRequest.setCreatedBy(request.getCreatedBy());
-        entityRequest.setTitle(request.getTitle());
-        entityRequest.setDescription(request.getDescription());
-        entityRequest.setBetPrice(request.getBetPrice());
+         BetEntity betEntity = betMapper.toEntity(request);
+        return repository.createBet(betEntity);
+    }
 
-        return repository.createBet(entityRequest);
+    public List<BetEntity> readBets() {
+        return repository.readAllBets();
+    }
+
+    public List<BetEntity> readOwnBets(Integer userId) {
+        return repository.readOwnBets(userId);
     }
 }

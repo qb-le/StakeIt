@@ -13,4 +13,5 @@ public class BetEntity {
     private String description;
     private BigDecimal betPrice;
     private OffsetDateTime createdAt;
+    private OffsetDateTime betEndsAt;
 }
