@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - StakeIt</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/StakeIt.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="app-layout">
+        <aside class="sidebar">
+            <div class="logo-wrapper">
+                <img src="~/images/stakeit-logo.png" alt="StakeIt Logo" class="logo" />
+            </div>
+
+            <div class="sidebar-buttons">
+                <a asp-controller="Account" asp-action="Login" class="side-btn">login</a>
+                <a asp-controller="Account" asp-action="Register" class="side-btn">register</a>
+            </div>
+        </aside>
+
+        <div class="page-content">
+            <main role="main">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

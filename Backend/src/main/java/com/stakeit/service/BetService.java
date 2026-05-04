@@ -1,8 +1,31 @@
 package com.stakeit.service;
 
+import com.stakeit.Repo.BetRepository;
 import com.stakeit.RequestDTO.CreateBetRequest;
-import com.stakeit.ResponseDTO.CreateBetResponse;
+import com.stakeit.entity.BetEntity;
+import com.stakeit.mapper.BetMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
-public interface BetService {
-    CreateBetResponse CreateBet(CreateBetRequest request);
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class BetService {
+
+    private final BetRepository repository;
+    private final BetMapper betMapper;
+
+    public BetEntity createBet(CreateBetRequest request) {
+         BetEntity betEntity = betMapper.toEntity(request);
+        return repository.createBet(betEntity);
+    }
+
+    public List<BetEntity> readBets() {
+        return repository.readAllBets();
+    }
+
+    public List<BetEntity> readOwnBets(Integer userId) {
+        return repository.readOwnBets(userId);
+    }
 }
