@@ -3,10 +3,10 @@ name: Test and Deploy StakeIt Backend
 on:
   push:
     branches:
-      - main
+      - '**'
   pull_request:
     branches:
-      - main
+      - '**'
   workflow_dispatch:
   
 jobs:
