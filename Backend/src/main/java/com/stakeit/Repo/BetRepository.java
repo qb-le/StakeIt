@@ -7,7 +7,7 @@ import java.util.List;
 public interface BetRepository {
     BetEntity createBet(BetEntity request);
     List<BetEntity> readAllBets();
-    List<BetEntity> readOwnBets(Integer CreatedBy);
-//    BetEntity readJoinedBets(Integer userId);
-//    String joinBet(Integer betId, Integer userId);
+    List<BetEntity> readOwnBets(Integer createdBy);
+    List<BetEntity> readJoinedBets(Integer userId);
+    String joinBet(Integer betId, Integer userId);
 }

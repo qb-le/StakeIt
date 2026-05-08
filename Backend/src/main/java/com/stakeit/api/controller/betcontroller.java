@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/bets")
+@RequestMapping("/Bets")
 @RequiredArgsConstructor
 public class BetController {
 
@@ -28,6 +28,16 @@ public class BetController {
     @GetMapping("AllBets")
     public List<BetEntity> readBets() {
         return  betService.readBets();
+    }
+
+    @GetMapping("JoinedBets")
+    public List<BetEntity> readJoinedBets(Integer userId) {
+        return  betService.readJoinedBets(userId);
+    }
+
+    @GetMapping("JoinBet")
+    public String joinBet(Integer betId, Integer userId) {
+        return betService.joinBet(betId, userId);
     }
 
 
