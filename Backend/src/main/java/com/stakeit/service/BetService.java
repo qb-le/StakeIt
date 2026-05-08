@@ -25,7 +25,15 @@ public class BetService {
         return repository.readAllBets();
     }
 
-    public List<BetEntity> readOwnBets(Integer userId) {
-        return repository.readOwnBets(userId);
+    public List<BetEntity> readOwnBets(Integer createdBy) {
+        return repository.readOwnBets(createdBy);
+    }
+
+    public List<BetEntity> readJoinedBets(Integer userId) {
+        return repository.readJoinedBets(userId);
+    }
+
+    public String joinBet(Integer betId, Integer userId) {
+        return repository.joinBet(betId, userId);
     }
 }
