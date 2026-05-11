@@ -1,0 +1,9 @@
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+}
+
+.page-content {
+  flex: 1;
+  background: white;
+}

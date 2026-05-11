@@ -1,0 +1,94 @@
+.landing-page {
+  width: 100%;
+  min-height: 100vh;
+  padding: 48px 64px;
+  background: #ffffff;
+  color: #111;
+}
+
+.hero-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px;
+  margin-bottom: 48px;
+}
+
+.info-card {
+  min-height: 180px;
+  padding: 32px;
+  border-radius: 28px;
+  background: #f3f3f3;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+.info-card h2 {
+  margin: 0 0 10px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #111;
+}
+
+.info-card p {
+  margin: 0;
+  font-size: 16px;
+  color: #555;
+}
+
+.bet-preview {
+  width: 100%;
+}
+
+.bets-title {
+  margin-bottom: 16px;
+  font-size: 28px;
+  color: #111;
+}
+
+.bet-row {
+  width: 100%;
+  min-height: 64px;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bet-row.light {
+  background: #efefef;
+}
+
+.bet-row.dark {
+  background: #b8b8b8;
+}
+
+.bet-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bet-title {
+  font-weight: 700;
+  color: #111;
+}
+
+.bet-description {
+  color: #555;
+  font-size: 14px;
+}
+
+.bet-price {
+  font-weight: 700;
+  color: #111;
+}
+
+.bets-error {
+  color: red;
+}
+
+.bets-message {
+  color: #555;
+}
