@@ -27,6 +27,7 @@ public class BetController {
 
     @GetMapping("AllBets")
     public List<BetEntity> readBets() {
+
         return  betService.readBets();
     }
 
