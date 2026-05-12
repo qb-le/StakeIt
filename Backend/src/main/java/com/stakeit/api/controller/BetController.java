@@ -41,5 +41,8 @@ public class BetController {
         return betService.joinBet(betId, userId);
     }
 
-
+    @GetMapping("ReadBet")
+    public BetEntity readBet(Integer betId) {
+        return betService.readBet(betId);
+    }
 }

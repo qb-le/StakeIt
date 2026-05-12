@@ -68,4 +68,10 @@ public class BetRepositoryImpl implements BetRepository {
 
         return "User joined bet successfully";
     }
+
+    public BetEntity readBet(Integer betId) {
+        return dsl.selectFrom(BET)
+                .where(BET.ID.eq(betId))
+                .fetchOneInto(BetEntity.class);
+    }
 }

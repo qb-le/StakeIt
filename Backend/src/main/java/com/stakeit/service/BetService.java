@@ -36,4 +36,8 @@ public class BetService {
     public String joinBet(Integer betId, Integer userId) {
         return repository.joinBet(betId, userId);
     }
+
+    public BetEntity readBet(Integer betId) {
+        return repository.readBet(betId);
+    }
 }
