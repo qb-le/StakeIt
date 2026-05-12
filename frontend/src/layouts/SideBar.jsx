@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
+import stakeitLogo from "../assets/stakeit-logo.webp";
 import "../design/Sidebar.css";
 
 function Sidebar() {
   return (
     <aside className="sidebar">
       <Link to="/" className="logo-circle">
-        <img src="/stakeit-logo.png" alt="StakeIt logo" />
+        <img src={stakeitLogo} alt="StakeIt logo" width="34" height="34" />
       </Link>
 
       <div className="sidebar-buttons">

@@ -1,9 +1,20 @@
 .app-layout {
-  min-height: 100vh;
   display: flex;
+  width: 100%;
+  min-height: 100vh;
+  background: white;
 }
 
-.page-content {
+.sidebar {
+  width: 90px;
+  min-height: 100vh;
+  flex-shrink: 0;
+}
+
+.main-content {
   flex: 1;
+  min-width: 0;
+  min-height: 100vh;
   background: white;
+  color: #111;
 }

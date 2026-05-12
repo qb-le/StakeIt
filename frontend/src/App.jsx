@@ -1,19 +1,16 @@
-// src/App.jsx
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
-
 import LandingPage from "./Pages/LandingPage";
-
+import LoginPage from "./Pages/LoginPage";
 
 function App() {
   return (
-    <BrowserRouter>
+    <MainLayout>
       <Routes>
-        <Route element={<MainLayout />}>
-          <Route path="/" element={<LandingPage />} />
-        </Route>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<LoginPage />} />
       </Routes>
-    </BrowserRouter>
+    </MainLayout>
   );
 }
 

@@ -10,4 +10,5 @@ public interface BetRepository {
     List<BetEntity> readOwnBets(Integer createdBy);
     List<BetEntity> readJoinedBets(Integer userId);
     String joinBet(Integer betId, Integer userId);
+    BetEntity readBet(Integer betId);
 }

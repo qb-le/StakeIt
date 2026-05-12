@@ -1,36 +1,54 @@
 import { useEffect, useState } from "react";
 import "../design/LandingPage.css";
+
+const BETS_PER_PAGE = 10;
+
 function LandingPage() {
   const [bets, setBets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-useEffect(() => {
-  async function fetchBets() {
-    try {
-      const response = await fetch("/api/Bets/AllBets");
+  const [currentPage, setCurrentPage] = useState(1);
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch bets: ${response.status}`);
+  useEffect(() => {
+    async function fetchBets() {
+      try {
+        const response = await fetch("/api/Bets/AllBets");
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch bets: ${response.status}`);
+        }
+
+        const contentType = response.headers.get("content-type");
+
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Backend did not return JSON. Check /api proxy.");
+        }
+
+        const data = await response.json();
+        setBets(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
-
-      const contentType = response.headers.get("content-type");
-
-      if (!contentType || !contentType.includes("application/json")) {
-        throw new Error("Backend did not return JSON. Check /api proxy.");
-      }
-
-      const data = await response.json();
-      setBets(data);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
     }
+
+    fetchBets();
+  }, []);
+
+  const totalPages = Math.ceil(bets.length / BETS_PER_PAGE);
+
+  const startIndex = (currentPage - 1) * BETS_PER_PAGE;
+  const currentBets = bets.slice(startIndex, startIndex + BETS_PER_PAGE);
+
+  function goToPreviousPage() {
+    setCurrentPage((page) => Math.max(page - 1, 1));
   }
 
-  fetchBets();
-}, []);
+  function goToNextPage() {
+    setCurrentPage((page) => Math.min(page + 1, totalPages));
+  }
 
   return (
     <div className="landing-page">
@@ -59,7 +77,7 @@ useEffect(() => {
 
         {!loading &&
           !error &&
-          bets.map((bet, index) => (
+          currentBets.map((bet, index) => (
             <div
               key={bet.id}
               className={`bet-row ${index % 2 === 0 ? "light" : "dark"}`}
@@ -69,9 +87,35 @@ useEffect(() => {
                 <span className="bet-description">{bet.description}</span>
               </div>
 
-              <span className="bet-price">€{bet.betPrice ?? bet.bet_price}</span>
+              <span className="bet-price">
+                €{bet.betPrice ?? bet.bet_price}
+              </span>
             </div>
           ))}
+
+        {!loading && !error && bets.length > BETS_PER_PAGE && (
+          <div className="pagination">
+            <button
+              type="button"
+              onClick={goToPreviousPage}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+
+            <span>
+              Page {currentPage} of {totalPages}
+            </span>
+
+            <button
+              type="button"
+              onClick={goToNextPage}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </section>
     </div>
   );
