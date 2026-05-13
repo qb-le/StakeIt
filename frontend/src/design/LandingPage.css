@@ -120,3 +120,17 @@
   color: #111;
   font-weight: 600;
 }
+
+.bet-row {
+  overflow: hidden;
+}
+
+.first-bet-row {
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+}
+
+.last-bet-row {
+  border-bottom-left-radius: 18px;
+  border-bottom-right-radius: 18px;
+}

@@ -1,8 +1,11 @@
 CREATE TABLE gambler (
     id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
     wallet_balance NUMERIC(12,2) NOT NULL DEFAULT 0,
+    refresh_token TEXT,
+    refresh_token_expiry TIMESTAMPTZ,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 

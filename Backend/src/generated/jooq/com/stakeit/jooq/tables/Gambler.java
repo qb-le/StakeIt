@@ -19,6 +19,7 @@ import java.util.List;
 import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.InverseForeignKey;
 import org.jooq.Name;
 import org.jooq.Path;
@@ -27,14 +28,13 @@ import org.jooq.QueryPart;
 import org.jooq.Record;
 import org.jooq.SQL;
 import org.jooq.Schema;
+import org.jooq.Select;
 import org.jooq.Stringly;
 import org.jooq.Table;
 import org.jooq.TableField;
-import org.jooq.TableLike;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
-import org.jooq.impl.Internal;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 
@@ -63,12 +63,7 @@ public class Gambler extends TableImpl<GamblerRecord> {
     /**
      * The column <code>public.gambler.id</code>.
      */
-    public final TableField<GamblerRecord, Integer> ID = createField(DSL.name("id"), SQLDataType.INTEGER.nullable(false), this, "");
-
-    /**
-     * The column <code>public.gambler.name</code>.
-     */
-    public final TableField<GamblerRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR(100).nullable(false), this, "");
+    public final TableField<GamblerRecord, Integer> ID = createField(DSL.name("id"), SQLDataType.INTEGER.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>public.gambler.email</code>.
@@ -83,12 +78,27 @@ public class Gambler extends TableImpl<GamblerRecord> {
     /**
      * The column <code>public.gambler.wallet_balance</code>.
      */
-    public final TableField<GamblerRecord, BigDecimal> WALLET_BALANCE = createField(DSL.name("wallet_balance"), SQLDataType.NUMERIC(12, 2).nullable(false).defaultValue(DSL.field(DSL.raw("0.00"), SQLDataType.NUMERIC)), this, "");
+    public final TableField<GamblerRecord, BigDecimal> WALLET_BALANCE = createField(DSL.name("wallet_balance"), SQLDataType.NUMERIC(4, 2).nullable(false).defaultValue(DSL.field(DSL.raw("0"), SQLDataType.NUMERIC)), this, "");
+
+    /**
+     * The column <code>public.gambler.refresh_token</code>.
+     */
+    public final TableField<GamblerRecord, String> REFRESH_TOKEN = createField(DSL.name("refresh_token"), SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>public.gambler.refresh_token_expiry</code>.
+     */
+    public final TableField<GamblerRecord, OffsetDateTime> REFRESH_TOKEN_EXPIRY = createField(DSL.name("refresh_token_expiry"), SQLDataType.TIMESTAMPWITHTIMEZONE(6), this, "");
 
     /**
      * The column <code>public.gambler.created_at</code>.
      */
     public final TableField<GamblerRecord, OffsetDateTime> CREATED_AT = createField(DSL.name("created_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).nullable(false).defaultValue(DSL.field(DSL.raw("now()"), SQLDataType.TIMESTAMPWITHTIMEZONE)), this, "");
+
+    /**
+     * The column <code>public.gambler.name</code>.
+     */
+    public final TableField<GamblerRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR(255), this, "");
 
     private Gambler(Name alias, Table<GamblerRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
@@ -158,6 +168,11 @@ public class Gambler extends TableImpl<GamblerRecord> {
     }
 
     @Override
+    public Identity<GamblerRecord, Integer> getIdentity() {
+        return (Identity<GamblerRecord, Integer>) super.getIdentity();
+    }
+
+    @Override
     public UniqueKey<GamblerRecord> getPrimaryKey() {
         return Keys.GAMBLER_PKEY;
     }
@@ -174,7 +189,7 @@ public class Gambler extends TableImpl<GamblerRecord> {
      */
     public BetPath bet() {
         if (_bet == null)
-            _bet = new BetPath(this, null, Keys.BET__BET_CREATED_BY_FKEY.getInverseKey());
+            _bet = new BetPath(this, null, Keys.BET__FK_BET_CREATED_BY.getInverseKey());
 
         return _bet;
     }
@@ -187,7 +202,7 @@ public class Gambler extends TableImpl<GamblerRecord> {
      */
     public JoinedUserPath joinedUser() {
         if (_joinedUser == null)
-            _joinedUser = new JoinedUserPath(this, null, Keys.JOINED_USER__JOINED_USER_USER_ID_FKEY.getInverseKey());
+            _joinedUser = new JoinedUserPath(this, null, Keys.JOINED_USER__FK_JOINED_USER_USER.getInverseKey());
 
         return _joinedUser;
     }
@@ -236,7 +251,7 @@ public class Gambler extends TableImpl<GamblerRecord> {
      */
     @Override
     public Gambler where(Condition condition) {
-        return new Gambler(getQualifiedName(), aliased() ? this : null, null, Internal.condition(this, condition));
+        return new Gambler(getQualifiedName(), aliased() ? this : null, null, condition);
     }
 
     /**
@@ -303,7 +318,7 @@ public class Gambler extends TableImpl<GamblerRecord> {
      * Create an inline derived table from this table
      */
     @Override
-    public Gambler whereExists(TableLike<?> select) {
+    public Gambler whereExists(Select<?> select) {
         return where(DSL.exists(select));
     }
 
@@ -311,7 +326,7 @@ public class Gambler extends TableImpl<GamblerRecord> {
      * Create an inline derived table from this table
      */
     @Override
-    public Gambler whereNotExists(TableLike<?> select) {
+    public Gambler whereNotExists(Select<?> select) {
         return where(DSL.notExists(select));
     }
 }

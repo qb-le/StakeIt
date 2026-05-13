@@ -1,7 +1,9 @@
 package com.stakeit.mapper;
 
 import com.stakeit.RequestDTO.CreateBetRequest;
+import com.stakeit.RequestDTO.CreateGamblerRequest;
 import com.stakeit.entity.BetEntity;
+import com.stakeit.entity.Gambler;
 import org.springframework.stereotype.Component;
 
 @Component

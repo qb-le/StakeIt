@@ -4,7 +4,6 @@
 package com.stakeit.jooq.tables;
 
 
-import com.stakeit.jooq.Indexes;
 import com.stakeit.jooq.Keys;
 import com.stakeit.jooq.Public;
 import com.stakeit.jooq.tables.Gambler.GamblerPath;
@@ -21,7 +20,7 @@ import org.jooq.Check;
 import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Index;
+import org.jooq.Identity;
 import org.jooq.InverseForeignKey;
 import org.jooq.Name;
 import org.jooq.Path;
@@ -30,10 +29,10 @@ import org.jooq.QueryPart;
 import org.jooq.Record;
 import org.jooq.SQL;
 import org.jooq.Schema;
+import org.jooq.Select;
 import org.jooq.Stringly;
 import org.jooq.Table;
 import org.jooq.TableField;
-import org.jooq.TableLike;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
@@ -66,7 +65,7 @@ public class Bet extends TableImpl<BetRecord> {
     /**
      * The column <code>public.bet.id</code>.
      */
-    public final TableField<BetRecord, Integer> ID = createField(DSL.name("id"), SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<BetRecord, Integer> ID = createField(DSL.name("id"), SQLDataType.INTEGER.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>public.bet.created_by</code>.
@@ -76,7 +75,7 @@ public class Bet extends TableImpl<BetRecord> {
     /**
      * The column <code>public.bet.title</code>.
      */
-    public final TableField<BetRecord, String> TITLE = createField(DSL.name("title"), SQLDataType.VARCHAR(200).nullable(false), this, "");
+    public final TableField<BetRecord, String> TITLE = createField(DSL.name("title"), SQLDataType.VARCHAR(255).nullable(false), this, "");
 
     /**
      * The column <code>public.bet.description</code>.
@@ -86,7 +85,7 @@ public class Bet extends TableImpl<BetRecord> {
     /**
      * The column <code>public.bet.bet_price</code>.
      */
-    public final TableField<BetRecord, BigDecimal> BET_PRICE = createField(DSL.name("bet_price"), SQLDataType.NUMERIC(12, 2).nullable(false), this, "");
+    public final TableField<BetRecord, BigDecimal> BET_PRICE = createField(DSL.name("bet_price"), SQLDataType.NUMERIC(4, 2).nullable(false), this, "");
 
     /**
      * The column <code>public.bet.created_at</code>.
@@ -96,7 +95,7 @@ public class Bet extends TableImpl<BetRecord> {
     /**
      * The column <code>public.bet.bet_ends_at</code>.
      */
-    public final TableField<BetRecord, OffsetDateTime> BET_ENDS_AT = createField(DSL.name("bet_ends_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).nullable(false), this, "");
+    public final TableField<BetRecord, OffsetDateTime> BET_ENDS_AT = createField(DSL.name("bet_ends_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6), this, "");
 
     private Bet(Name alias, Table<BetRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
@@ -166,8 +165,8 @@ public class Bet extends TableImpl<BetRecord> {
     }
 
     @Override
-    public List<Index> getIndexes() {
-        return Arrays.asList(Indexes.IDX_BET_CREATED_BY);
+    public Identity<BetRecord, Integer> getIdentity() {
+        return (Identity<BetRecord, Integer>) super.getIdentity();
     }
 
     @Override
@@ -177,7 +176,7 @@ public class Bet extends TableImpl<BetRecord> {
 
     @Override
     public List<ForeignKey<BetRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.BET__BET_CREATED_BY_FKEY);
+        return Arrays.asList(Keys.BET__FK_BET_CREATED_BY);
     }
 
     private transient GamblerPath _gambler;
@@ -187,7 +186,7 @@ public class Bet extends TableImpl<BetRecord> {
      */
     public GamblerPath gambler() {
         if (_gambler == null)
-            _gambler = new GamblerPath(this, Keys.BET__BET_CREATED_BY_FKEY, null);
+            _gambler = new GamblerPath(this, Keys.BET__FK_BET_CREATED_BY, null);
 
         return _gambler;
     }
@@ -200,7 +199,7 @@ public class Bet extends TableImpl<BetRecord> {
      */
     public JoinedUserPath joinedUser() {
         if (_joinedUser == null)
-            _joinedUser = new JoinedUserPath(this, null, Keys.JOINED_USER__JOINED_USER_BET_ID_FKEY.getInverseKey());
+            _joinedUser = new JoinedUserPath(this, null, Keys.JOINED_USER__FK_JOINED_USER_BET.getInverseKey());
 
         return _joinedUser;
     }
@@ -256,7 +255,7 @@ public class Bet extends TableImpl<BetRecord> {
      */
     @Override
     public Bet where(Condition condition) {
-        return new Bet(getQualifiedName(), aliased() ? this : null, null, Internal.condition(this, condition));
+        return new Bet(getQualifiedName(), aliased() ? this : null, null, condition);
     }
 
     /**
@@ -323,7 +322,7 @@ public class Bet extends TableImpl<BetRecord> {
      * Create an inline derived table from this table
      */
     @Override
-    public Bet whereExists(TableLike<?> select) {
+    public Bet whereExists(Select<?> select) {
         return where(DSL.exists(select));
     }
 
@@ -331,7 +330,7 @@ public class Bet extends TableImpl<BetRecord> {
      * Create an inline derived table from this table
      */
     @Override
-    public Bet whereNotExists(TableLike<?> select) {
+    public Bet whereNotExists(Select<?> select) {
         return where(DSL.notExists(select));
     }
 }

@@ -3,7 +3,7 @@ plugins {
     id 'org.springframework.boot' version '3.2.5'
     id 'io.spring.dependency-management' version '1.1.4'
     id "org.sonarqube" version "7.2.3.7755"
-    id 'org.jooq.jooq-codegen-gradle' version '3.21.0'
+    id 'org.jooq.jooq-codegen-gradle' version '3.20.5'
 }
 
 group = 'com.stakeit'
@@ -17,21 +17,34 @@ repositories {
     mavenCentral()
 }
 
-ext['jooq.version'] = '3.21.0'
+ext {
+    set('jooq.version', '3.20.5')
+}
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-jooq'
+
+    implementation 'org.jooq:jooq:3.20.5'
+
+    implementation 'io.jsonwebtoken:jjwt-api:0.13.0'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.13.0'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.13.0'
+
+    runtimeOnly 'org.postgresql:postgresql:42.7.10'
+
+    jooqCodegen 'org.jooq:jooq-meta:3.20.5'
+    jooqCodegen 'org.jooq:jooq-codegen:3.20.5'
+    jooqCodegen 'org.postgresql:postgresql:42.7.10'
+
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    runtimeOnly 'org.postgresql:postgresql'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-
-    jooqCodegen 'org.postgresql:postgresql:42.7.10'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
@@ -40,8 +53,8 @@ jooq {
     configuration {
         jdbc {
             driver = 'org.postgresql.Driver'
-            url = 'jdbc:postgresql://145.220.72.157:5433/stakeit_db'
-            user = 'stakeit_user'
+            url = 'jdbc:postgresql://localhost:5433/stakeit_db'
+            user = 'postgres'
             password = 'test'
         }
 
@@ -76,4 +89,8 @@ sourceSets {
             srcDirs += ['src/generated/jooq']
         }
     }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
 }

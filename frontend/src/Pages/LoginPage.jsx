@@ -1,14 +1,19 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import "../design/LoginPage.css";
 
 function LoginPage() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -21,30 +26,41 @@ function LoginPage() {
 
   async function handleSubmit(event) {
     event.preventDefault();
+
     setError("");
+    setLoading(true);
 
     try {
-      const response = await fetch("/api/Auth/Login", {
+      const response = await fetch("/api/Gambler/Login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          email: formData.email.trim(),
+          password: formData.password,
+        }),
       });
 
+      const data = await response.json().catch(() => null);
+
       if (!response.ok) {
-        throw new Error(`Login failed: ${response.status}`);
+        throw new Error(data?.message || "Invalid email or password");
       }
 
-      const data = await response.json();
+      const token = data?.accessToken || data?.accesToken;
 
-      console.log("Login success:", data);
+      if (!token) {
+        console.log("LOGIN RESPONSE DATA:", data);
+        throw new Error("Login failed. No token received from backend.");
+      }
 
-      // Later you can save token here:
-      // localStorage.setItem("token", data.token);
-
+      login(data);
+      navigate("/");
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -66,6 +82,7 @@ function LoginPage() {
               placeholder="you@example.com"
               value={formData.email}
               onChange={handleChange}
+              disabled={loading}
               required
             />
           </div>
@@ -79,20 +96,20 @@ function LoginPage() {
               placeholder="Enter your password"
               value={formData.password}
               onChange={handleChange}
+              disabled={loading}
               required
             />
           </div>
 
           {error && <p className="login-error">{error}</p>}
 
-          <button type="submit" className="login-button">
-            Login
+          <button type="submit" className="login-button" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
         <p className="login-footer">
-          Don&apos;t have an account?{" "}
-          <Link to="/register">Register</Link>
+          Don&apos;t have an account? <Link to="/register">Register</Link>
         </p>
       </section>
     </div>

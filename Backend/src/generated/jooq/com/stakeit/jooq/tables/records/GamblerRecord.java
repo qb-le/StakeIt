@@ -37,25 +37,10 @@ public class GamblerRecord extends UpdatableRecordImpl<GamblerRecord> {
     }
 
     /**
-     * Setter for <code>public.gambler.name</code>.
-     */
-    public GamblerRecord setName(String value) {
-        set(1, value);
-        return this;
-    }
-
-    /**
-     * Getter for <code>public.gambler.name</code>.
-     */
-    public String getName() {
-        return (String) get(1);
-    }
-
-    /**
      * Setter for <code>public.gambler.email</code>.
      */
     public GamblerRecord setEmail(String value) {
-        set(2, value);
+        set(1, value);
         return this;
     }
 
@@ -63,14 +48,14 @@ public class GamblerRecord extends UpdatableRecordImpl<GamblerRecord> {
      * Getter for <code>public.gambler.email</code>.
      */
     public String getEmail() {
-        return (String) get(2);
+        return (String) get(1);
     }
 
     /**
      * Setter for <code>public.gambler.password_hash</code>.
      */
     public GamblerRecord setPasswordHash(String value) {
-        set(3, value);
+        set(2, value);
         return this;
     }
 
@@ -78,14 +63,14 @@ public class GamblerRecord extends UpdatableRecordImpl<GamblerRecord> {
      * Getter for <code>public.gambler.password_hash</code>.
      */
     public String getPasswordHash() {
-        return (String) get(3);
+        return (String) get(2);
     }
 
     /**
      * Setter for <code>public.gambler.wallet_balance</code>.
      */
     public GamblerRecord setWalletBalance(BigDecimal value) {
-        set(4, value);
+        set(3, value);
         return this;
     }
 
@@ -93,14 +78,44 @@ public class GamblerRecord extends UpdatableRecordImpl<GamblerRecord> {
      * Getter for <code>public.gambler.wallet_balance</code>.
      */
     public BigDecimal getWalletBalance() {
-        return (BigDecimal) get(4);
+        return (BigDecimal) get(3);
+    }
+
+    /**
+     * Setter for <code>public.gambler.refresh_token</code>.
+     */
+    public GamblerRecord setRefreshToken(String value) {
+        set(4, value);
+        return this;
+    }
+
+    /**
+     * Getter for <code>public.gambler.refresh_token</code>.
+     */
+    public String getRefreshToken() {
+        return (String) get(4);
+    }
+
+    /**
+     * Setter for <code>public.gambler.refresh_token_expiry</code>.
+     */
+    public GamblerRecord setRefreshTokenExpiry(OffsetDateTime value) {
+        set(5, value);
+        return this;
+    }
+
+    /**
+     * Getter for <code>public.gambler.refresh_token_expiry</code>.
+     */
+    public OffsetDateTime getRefreshTokenExpiry() {
+        return (OffsetDateTime) get(5);
     }
 
     /**
      * Setter for <code>public.gambler.created_at</code>.
      */
     public GamblerRecord setCreatedAt(OffsetDateTime value) {
-        set(5, value);
+        set(6, value);
         return this;
     }
 
@@ -108,7 +123,22 @@ public class GamblerRecord extends UpdatableRecordImpl<GamblerRecord> {
      * Getter for <code>public.gambler.created_at</code>.
      */
     public OffsetDateTime getCreatedAt() {
-        return (OffsetDateTime) get(5);
+        return (OffsetDateTime) get(6);
+    }
+
+    /**
+     * Setter for <code>public.gambler.name</code>.
+     */
+    public GamblerRecord setName(String value) {
+        set(7, value);
+        return this;
+    }
+
+    /**
+     * Getter for <code>public.gambler.name</code>.
+     */
+    public String getName() {
+        return (String) get(7);
     }
 
     // -------------------------------------------------------------------------
@@ -134,15 +164,17 @@ public class GamblerRecord extends UpdatableRecordImpl<GamblerRecord> {
     /**
      * Create a detached, initialised GamblerRecord
      */
-    public GamblerRecord(Integer id, String name, String email, String passwordHash, BigDecimal walletBalance, OffsetDateTime createdAt) {
+    public GamblerRecord(Integer id, String email, String passwordHash, BigDecimal walletBalance, String refreshToken, OffsetDateTime refreshTokenExpiry, OffsetDateTime createdAt, String name) {
         super(Gambler.GAMBLER);
 
         setId(id);
-        setName(name);
         setEmail(email);
         setPasswordHash(passwordHash);
         setWalletBalance(walletBalance);
+        setRefreshToken(refreshToken);
+        setRefreshTokenExpiry(refreshTokenExpiry);
         setCreatedAt(createdAt);
+        setName(name);
         resetTouchedOnNotNull();
     }
 }

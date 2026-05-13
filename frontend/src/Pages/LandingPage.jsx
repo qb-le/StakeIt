@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "../design/LandingPage.css";
 
-const BETS_PER_PAGE = 10;
+const BETS_PER_PAGE = 6;
 
 function LandingPage() {
   const [bets, setBets] = useState([]);
@@ -80,7 +80,9 @@ function LandingPage() {
           currentBets.map((bet, index) => (
             <div
               key={bet.id}
-              className={`bet-row ${index % 2 === 0 ? "light" : "dark"}`}
+              className={`bet-row ${index % 2 === 0 ? "light" : "dark"} ${
+                index === 0 ? "first-bet-row" : ""
+              } ${index === currentBets.length - 1 ? "last-bet-row" : ""}`}
             >
               <div className="bet-info">
                 <span className="bet-title">{bet.title}</span>

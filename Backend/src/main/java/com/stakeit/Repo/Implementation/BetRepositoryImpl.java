@@ -1,4 +1,4 @@
-package com.stakeit.repository;
+package com.stakeit.Repo.Implementation;
 
 import static com.stakeit.jooq.Tables.BET;
 import static com.stakeit.jooq.Tables.JOINED_USER;
@@ -8,7 +8,6 @@ import com.stakeit.entity.BetEntity;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Repository

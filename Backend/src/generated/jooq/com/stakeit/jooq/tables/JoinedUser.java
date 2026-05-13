@@ -4,7 +4,6 @@
 package com.stakeit.jooq.tables;
 
 
-import com.stakeit.jooq.Indexes;
 import com.stakeit.jooq.Keys;
 import com.stakeit.jooq.Public;
 import com.stakeit.jooq.tables.Bet.BetPath;
@@ -19,7 +18,6 @@ import java.util.List;
 import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Index;
 import org.jooq.InverseForeignKey;
 import org.jooq.Name;
 import org.jooq.Path;
@@ -28,14 +26,13 @@ import org.jooq.QueryPart;
 import org.jooq.Record;
 import org.jooq.SQL;
 import org.jooq.Schema;
+import org.jooq.Select;
 import org.jooq.Stringly;
 import org.jooq.Table;
 import org.jooq.TableField;
-import org.jooq.TableLike;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
-import org.jooq.impl.Internal;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 
@@ -144,18 +141,13 @@ public class JoinedUser extends TableImpl<JoinedUserRecord> {
     }
 
     @Override
-    public List<Index> getIndexes() {
-        return Arrays.asList(Indexes.IDX_JOINED_USER_BET_ID, Indexes.IDX_JOINED_USER_USER_ID);
-    }
-
-    @Override
     public UniqueKey<JoinedUserRecord> getPrimaryKey() {
         return Keys.JOINED_USER_PKEY;
     }
 
     @Override
     public List<ForeignKey<JoinedUserRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.JOINED_USER__JOINED_USER_BET_ID_FKEY, Keys.JOINED_USER__JOINED_USER_USER_ID_FKEY);
+        return Arrays.asList(Keys.JOINED_USER__FK_JOINED_USER_BET, Keys.JOINED_USER__FK_JOINED_USER_USER);
     }
 
     private transient BetPath _bet;
@@ -165,7 +157,7 @@ public class JoinedUser extends TableImpl<JoinedUserRecord> {
      */
     public BetPath bet() {
         if (_bet == null)
-            _bet = new BetPath(this, Keys.JOINED_USER__JOINED_USER_BET_ID_FKEY, null);
+            _bet = new BetPath(this, Keys.JOINED_USER__FK_JOINED_USER_BET, null);
 
         return _bet;
     }
@@ -177,7 +169,7 @@ public class JoinedUser extends TableImpl<JoinedUserRecord> {
      */
     public GamblerPath gambler() {
         if (_gambler == null)
-            _gambler = new GamblerPath(this, Keys.JOINED_USER__JOINED_USER_USER_ID_FKEY, null);
+            _gambler = new GamblerPath(this, Keys.JOINED_USER__FK_JOINED_USER_USER, null);
 
         return _gambler;
     }
@@ -226,7 +218,7 @@ public class JoinedUser extends TableImpl<JoinedUserRecord> {
      */
     @Override
     public JoinedUser where(Condition condition) {
-        return new JoinedUser(getQualifiedName(), aliased() ? this : null, null, Internal.condition(this, condition));
+        return new JoinedUser(getQualifiedName(), aliased() ? this : null, null, condition);
     }
 
     /**
@@ -293,7 +285,7 @@ public class JoinedUser extends TableImpl<JoinedUserRecord> {
      * Create an inline derived table from this table
      */
     @Override
-    public JoinedUser whereExists(TableLike<?> select) {
+    public JoinedUser whereExists(Select<?> select) {
         return where(DSL.exists(select));
     }
 
@@ -301,7 +293,7 @@ public class JoinedUser extends TableImpl<JoinedUserRecord> {
      * Create an inline derived table from this table
      */
     @Override
-    public JoinedUser whereNotExists(TableLike<?> select) {
+    public JoinedUser whereNotExists(Select<?> select) {
         return where(DSL.notExists(select));
     }
 }
