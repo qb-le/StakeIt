@@ -1,12 +1,10 @@
 package com.stakeit.api.controller;
 
-import com.stakeit.Repo.GamblerRepository;
 import com.stakeit.RequestDTO.CreateGamblerRequest;
 import com.stakeit.RequestDTO.LoginRequest;
 import com.stakeit.ResponseDTO.CreateGamblerResponse;
 import com.stakeit.ResponseDTO.LoginResponse;
 import com.stakeit.service.GamblerService;
-import com.stakeit.service.JWTService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/Gambler")
 @RequiredArgsConstructor
 public class GamblerController {
-    private final JWTService jwtService;
     private final GamblerService gamblerservice;
 
     @PostMapping("/CreateGambler")

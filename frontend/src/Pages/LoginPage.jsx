@@ -43,6 +43,7 @@ function LoginPage() {
       });
 
       const data = await response.json().catch(() => null);
+      console.log("LOGIN DATA:", data);
 
       if (!response.ok) {
         throw new Error(data?.message || "Invalid email or password");

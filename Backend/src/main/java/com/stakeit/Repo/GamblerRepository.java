@@ -1,13 +1,12 @@
 package com.stakeit.Repo;
 
-import com.stakeit.RequestDTO.CreateGamblerRequest;
 import com.stakeit.entity.Gambler;
 
 import java.time.OffsetDateTime;
 
 public interface GamblerRepository {
-    public boolean checkIfGamblerExists(String email);
-    public Gambler createGambler(Gambler gambler);
-    public Gambler findByEmail(String email);
-    public Gambler saveGamblerToken(Integer id, String refreshToken, OffsetDateTime refreshTokenExpiry);
+    boolean checkIfGamblerExists(String email);
+    void createGambler(Gambler gambler);
+    Gambler findByEmail(String email);
+    void saveGamblerToken(Integer id, String refreshToken, OffsetDateTime refreshTokenExpiry);
 }

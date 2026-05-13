@@ -3,7 +3,6 @@ package com.stakeit.ResponseDTO;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
 
 @Data
 public class LoginResponse {
@@ -13,10 +12,6 @@ public class LoginResponse {
     private BigDecimal walletBalance;
     private String message;
     private String name;
-
-    public LoginResponse(String message){
-        this.message = message;
-    }
 
     public LoginResponse(Integer id, String email, String accessToken, BigDecimal walletBalance, String message, String name) {
         this.id = id;

@@ -5,14 +5,10 @@ import com.stakeit.RequestDTO.CreateGamblerRequest;
 import com.stakeit.RequestDTO.LoginRequest;
 import com.stakeit.ResponseDTO.CreateGamblerResponse;
 import com.stakeit.ResponseDTO.LoginResponse;
-import com.stakeit.entity.BetEntity;
 import com.stakeit.entity.Gambler;
-import com.stakeit.mapper.BetMapper;
 import com.stakeit.mapper.GamblerMapper;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.message.Message;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -55,7 +51,7 @@ public class GamblerService {
             );
         }
 
-        if (!BCrypt.checkpw(request.getPassword(), gambler.getPasswordHash())) {
+        if (!BcryptHasher.checkPassword(request.getPassword(), gambler.getPasswordHash())) {
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
                     "Invalid email or password"
