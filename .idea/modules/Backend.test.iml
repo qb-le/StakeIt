@@ -22,7 +22,7 @@
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-validation:3.2.5" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-security:3.2.5" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-jooq:3.2.5" level="project" />
-    <orderEntry type="library" name="Gradle: org.jooq:jooq:3.19.16" level="project" />
+    <orderEntry type="library" name="Gradle: org.jooq:jooq:3.20.5" level="project" />
     <orderEntry type="library" name="Gradle: io.jsonwebtoken:jjwt-api:0.13.0" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-test:3.2.5" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter:3.2.5" level="project" />

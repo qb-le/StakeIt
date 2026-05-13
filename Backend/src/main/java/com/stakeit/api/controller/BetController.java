@@ -20,29 +20,31 @@ public class BetController {
         return betService.createBet(request);
     }
 
-    @GetMapping("OwnBets")
-    public List<BetEntity> readOwnBets(Integer userId) {
+    @GetMapping("/OwnBets")
+    public List<BetEntity> readOwnBets(@RequestParam Integer userId) {
         return betService.readOwnBets(userId);
     }
 
-    @GetMapping("AllBets")
+    @GetMapping("/AllBets")
     public List<BetEntity> readBets() {
-
-        return  betService.readBets();
+        return betService.readBets();
     }
 
-    @GetMapping("JoinedBets")
-    public List<BetEntity> readJoinedBets(Integer userId) {
-        return  betService.readJoinedBets(userId);
+    @GetMapping("/JoinedBets")
+    public List<BetEntity> readJoinedBets(@RequestParam Integer userId) {
+        return betService.readJoinedBets(userId);
     }
 
-    @GetMapping("JoinBet")
-    public String joinBet(Integer betId, Integer userId) {
+    @PostMapping("/JoinBet")
+    public String joinBet(
+            @RequestParam Integer betId,
+            @RequestParam Integer userId
+    ) {
         return betService.joinBet(betId, userId);
     }
 
-    @GetMapping("ReadBet")
-    public BetEntity readBet(Integer betId) {
+    @GetMapping("/ReadBet")
+    public BetEntity readBet(@RequestParam Integer betId) {
         return betService.readBet(betId);
     }
 }
