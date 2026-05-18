@@ -1,15 +1,17 @@
-package com.stakeit.repository;
-
-import static com.stakeit.jooq.Tables.BET;
-import static com.stakeit.jooq.Tables.JOINED_USER;
+package com.stakeit.Repo.Implementation;
 
 import com.stakeit.Repo.BetRepository;
+import com.stakeit.ResponseDTO.CreateBetResponse;
 import com.stakeit.entity.BetEntity;
+import com.stakeit.jooq.tables.Bet;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.List;
+
+import static com.stakeit.jooq.Tables.*;
+import static com.stakeit.jooq.Tables.GAMBLER;
 
 @Repository
 public class BetRepositoryImpl implements BetRepository {
@@ -22,8 +24,17 @@ public class BetRepositoryImpl implements BetRepository {
 
     public List<BetEntity> readAllBets() {
         return dsl.selectFrom(BET)
-                .orderBy(BET.CREATED_AT.desc())
+                .where(BET.STATUS.eq("OPEN"))
+                .and(BET.BET_ENDS_AT.gt(OffsetDateTime.now()))
                 .fetchInto(BetEntity.class);
+    }
+
+    public void closeExpiredBets() {
+        dsl.update(BET)
+                .set(BET.STATUS, "CLOSED")
+                .where(BET.STATUS.eq("OPEN"))
+                .and(BET.BET_ENDS_AT.lessOrEqual(OffsetDateTime.now()))
+                .execute();
     }
 
     public List<BetEntity> readOwnBets(Integer userId) {
@@ -33,15 +44,33 @@ public class BetRepositoryImpl implements BetRepository {
                 .fetchInto(BetEntity.class);
     }
 
-    public BetEntity createBet(BetEntity request) {
-        return dsl.insertInto(BET)
-                .set(BET.CREATED_BY, request.getCreatedBy())
+    public CreateBetResponse createBet(BetEntity request, Integer gamblerId) {
+        BetEntity createdBet = dsl.insertInto(BET)
+                .set(BET.CREATED_BY, gamblerId)
                 .set(BET.TITLE, request.getTitle())
                 .set(BET.DESCRIPTION, request.getDescription())
                 .set(BET.BET_PRICE, request.getBetPrice())
                 .set(BET.BET_ENDS_AT, request.getBetEndsAt())
+                .set(BET.STATUS, "OPEN")
                 .returning()
                 .fetchOneInto(BetEntity.class);
+
+
+        if (createdBet == null) {
+            throw new RuntimeException("Failed to create bet");
+        }
+
+        String creatorName = dsl.select(GAMBLER.NAME)
+                .from(GAMBLER)
+                .where(GAMBLER.ID.eq(gamblerId))
+                .fetchOneInto(String.class);
+
+        return new CreateBetResponse(
+                createdBet.getTitle(),
+                createdBet.getDescription(),
+                createdBet.getBetPrice(),
+                createdBet.getBetEndsAt(),
+                creatorName);
     }
 
     public List<BetEntity> readJoinedBets(Integer userId) {
@@ -67,5 +96,11 @@ public class BetRepositoryImpl implements BetRepository {
                 .execute();
 
         return "User joined bet successfully";
+    }
+
+    public BetEntity readBet(Integer betId) {
+        return dsl.selectFrom(BET)
+                .where(BET.ID.eq(betId))
+                .fetchOneInto(BetEntity.class);
     }
 }

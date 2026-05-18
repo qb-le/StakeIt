@@ -39,7 +39,7 @@ public class Keys {
     // FOREIGN KEY definitions
     // -------------------------------------------------------------------------
 
-    public static final ForeignKey<BetRecord, GamblerRecord> BET__BET_CREATED_BY_FKEY = Internal.createForeignKey(Bet.BET, DSL.name("bet_created_by_fkey"), new TableField[] { Bet.BET.CREATED_BY }, Keys.GAMBLER_PKEY, new TableField[] { Gambler.GAMBLER.ID }, true, ForeignKeyRule.CASCADE, ForeignKeyRule.NO_ACTION);
-    public static final ForeignKey<JoinedUserRecord, BetRecord> JOINED_USER__JOINED_USER_BET_ID_FKEY = Internal.createForeignKey(JoinedUser.JOINED_USER, DSL.name("joined_user_bet_id_fkey"), new TableField[] { JoinedUser.JOINED_USER.BET_ID }, Keys.BET_PKEY, new TableField[] { Bet.BET.ID }, true, ForeignKeyRule.CASCADE, ForeignKeyRule.NO_ACTION);
-    public static final ForeignKey<JoinedUserRecord, GamblerRecord> JOINED_USER__JOINED_USER_USER_ID_FKEY = Internal.createForeignKey(JoinedUser.JOINED_USER, DSL.name("joined_user_user_id_fkey"), new TableField[] { JoinedUser.JOINED_USER.USER_ID }, Keys.GAMBLER_PKEY, new TableField[] { Gambler.GAMBLER.ID }, true, ForeignKeyRule.CASCADE, ForeignKeyRule.NO_ACTION);
+    public static final ForeignKey<BetRecord, GamblerRecord> BET__FK_BET_CREATED_BY = Internal.createForeignKey(Bet.BET, DSL.name("fk_bet_created_by"), new TableField[] { Bet.BET.CREATED_BY }, Keys.GAMBLER_PKEY, new TableField[] { Gambler.GAMBLER.ID }, true, ForeignKeyRule.CASCADE, ForeignKeyRule.NO_ACTION);
+    public static final ForeignKey<JoinedUserRecord, BetRecord> JOINED_USER__FK_JOINED_USER_BET = Internal.createForeignKey(JoinedUser.JOINED_USER, DSL.name("fk_joined_user_bet"), new TableField[] { JoinedUser.JOINED_USER.BET_ID }, Keys.BET_PKEY, new TableField[] { Bet.BET.ID }, true, ForeignKeyRule.CASCADE, ForeignKeyRule.NO_ACTION);
+    public static final ForeignKey<JoinedUserRecord, GamblerRecord> JOINED_USER__FK_JOINED_USER_USER = Internal.createForeignKey(JoinedUser.JOINED_USER, DSL.name("fk_joined_user_user"), new TableField[] { JoinedUser.JOINED_USER.USER_ID }, Keys.GAMBLER_PKEY, new TableField[] { Gambler.GAMBLER.ID }, true, ForeignKeyRule.CASCADE, ForeignKeyRule.NO_ACTION);
 }
