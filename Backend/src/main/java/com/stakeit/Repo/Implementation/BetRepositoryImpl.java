@@ -3,7 +3,6 @@ package com.stakeit.Repo.Implementation;
 import com.stakeit.Repo.BetRepository;
 import com.stakeit.ResponseDTO.CreateBetResponse;
 import com.stakeit.entity.BetEntity;
-import com.stakeit.jooq.tables.Bet;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
