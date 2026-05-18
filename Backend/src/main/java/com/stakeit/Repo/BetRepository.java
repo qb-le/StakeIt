@@ -1,11 +1,13 @@
 package com.stakeit.Repo;
 
+import com.stakeit.ResponseDTO.CreateBetResponse;
 import com.stakeit.entity.BetEntity;
 
 import java.util.List;
 
 public interface BetRepository {
-    BetEntity createBet(BetEntity request);
+    void closeExpiredBets();
+    CreateBetResponse createBet(BetEntity request, Integer gamblerId);
     List<BetEntity> readAllBets();
     List<BetEntity> readOwnBets(Integer createdBy);
     List<BetEntity> readJoinedBets(Integer userId);

@@ -2,6 +2,9 @@ package com.stakeit.Repo.Implementation;
 
 import com.stakeit.Repo.GamblerRepository;
 import static com.stakeit.jooq.Tables.GAMBLER;
+import static com.stakeit.jooq.tables.Bet.BET;
+
+import com.stakeit.entity.BetEntity;
 import com.stakeit.entity.Gambler;
 import org.springframework.stereotype.Repository;
 import org.jooq.DSLContext;
@@ -32,6 +35,7 @@ public class GamblerRepositoryImpl implements GamblerRepository {
 
                     gambler.setId(record.getId());
                     gambler.setEmail(record.getEmail());
+                    gambler.setName(record.getName());
                     gambler.setPasswordHash(record.getPasswordHash());
                     gambler.setWalletBalance(record.getWalletBalance());
 
@@ -49,8 +53,8 @@ public class GamblerRepositoryImpl implements GamblerRepository {
                 .fetchOneInto(Gambler.class);
     }
 
-    public Gambler saveGamblerToken(Integer id, String refreshToken, OffsetDateTime refreshTokenExpiry) {
-        return dsl.update(GAMBLER)
+    public void saveGamblerToken(Integer id, String refreshToken, OffsetDateTime refreshTokenExpiry) {
+        dsl.update(GAMBLER)
                 .set(GAMBLER.REFRESH_TOKEN, refreshToken)
                 .set(GAMBLER.REFRESH_TOKEN_EXPIRY, refreshTokenExpiry)
                 .where(GAMBLER.ID.eq(id))
@@ -61,10 +65,7 @@ public class GamblerRepositoryImpl implements GamblerRepository {
                     gambler.setId(record.getId());
                     gambler.setEmail(record.getEmail());
                     gambler.setName(record.getName());
-                    gambler.setPasswordHash(record.getPasswordHash());
                     gambler.setWalletBalance(record.getWalletBalance());
-                    gambler.setRefreshToken(record.getRefreshToken());
-                    gambler.setRefreshTokenExpiry(record.getRefreshTokenExpiry());
                     gambler.setCreatedAt(record.getCreatedAt());
 
                     return gambler;

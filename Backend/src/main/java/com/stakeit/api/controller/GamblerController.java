@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/Gambler")
+@RequestMapping("/Auth")
 @RequiredArgsConstructor
 public class GamblerController {
     private final GamblerService gamblerservice;

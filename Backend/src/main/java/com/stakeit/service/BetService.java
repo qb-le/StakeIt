@@ -2,6 +2,7 @@ package com.stakeit.service;
 
 import com.stakeit.Repo.BetRepository;
 import com.stakeit.RequestDTO.CreateBetRequest;
+import com.stakeit.ResponseDTO.CreateBetResponse;
 import com.stakeit.entity.BetEntity;
 import com.stakeit.mapper.BetMapper;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +17,13 @@ public class BetService {
     private final BetRepository repository;
     private final BetMapper betMapper;
 
-    public BetEntity createBet(CreateBetRequest request) {
+    public CreateBetResponse createBet(CreateBetRequest request, Integer gamblerId) {
          BetEntity betEntity = betMapper.toEntity(request);
-        return repository.createBet(betEntity);
+        return repository.createBet(betEntity, gamblerId);
     }
 
     public List<BetEntity> readBets() {
+        repository.closeExpiredBets();
         return repository.readAllBets();
     }
 

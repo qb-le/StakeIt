@@ -1,14 +1,28 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../design/LandingPage.css";
 
 const BETS_PER_PAGE = 6;
 
 function LandingPage() {
+  const navigate = useNavigate();
+
   const [bets, setBets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
+
+  function handleCreateBetClick() {
+    const accessToken = localStorage.getItem("accessToken");
+
+    if (!accessToken) {
+      navigate("/login");
+      return;
+    }
+
+    navigate("/create-bet");
+  }
 
   useEffect(() => {
     async function fetchBets() {
@@ -56,6 +70,14 @@ function LandingPage() {
         <div className="info-card">
           <h2>Make your own bets</h2>
           <p>Register and create fun bets with your friends.</p>
+
+          <button
+            type="button"
+            className="create-bet-button"
+            onClick={handleCreateBetClick}
+          >
+            Create Bet
+          </button>
         </div>
 
         <div className="info-card">

@@ -31,7 +31,7 @@ function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/Gambler/Login", {
+      const response = await fetch("/api/Auth/Login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
