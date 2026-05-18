@@ -97,6 +97,11 @@ public class Bet extends TableImpl<BetRecord> {
      */
     public final TableField<BetRecord, OffsetDateTime> BET_ENDS_AT = createField(DSL.name("bet_ends_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6), this, "");
 
+    /**
+     * The column <code>public.bet.status</code>.
+     */
+    public final TableField<BetRecord, String> STATUS = createField(DSL.name("status"), SQLDataType.VARCHAR(30).nullable(false).defaultValue(DSL.field(DSL.raw("'OPEN'::character varying"), SQLDataType.VARCHAR)), this, "");
+
     private Bet(Name alias, Table<BetRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
     }

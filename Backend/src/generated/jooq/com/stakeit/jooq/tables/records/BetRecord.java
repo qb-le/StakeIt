@@ -126,6 +126,21 @@ public class BetRecord extends UpdatableRecordImpl<BetRecord> {
         return (OffsetDateTime) get(6);
     }
 
+    /**
+     * Setter for <code>public.bet.status</code>.
+     */
+    public BetRecord setStatus(String value) {
+        set(7, value);
+        return this;
+    }
+
+    /**
+     * Getter for <code>public.bet.status</code>.
+     */
+    public String getStatus() {
+        return (String) get(7);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -149,7 +164,7 @@ public class BetRecord extends UpdatableRecordImpl<BetRecord> {
     /**
      * Create a detached, initialised BetRecord
      */
-    public BetRecord(Integer id, Integer createdBy, String title, String description, BigDecimal betPrice, OffsetDateTime createdAt, OffsetDateTime betEndsAt) {
+    public BetRecord(Integer id, Integer createdBy, String title, String description, BigDecimal betPrice, OffsetDateTime createdAt, OffsetDateTime betEndsAt, String status) {
         super(Bet.BET);
 
         setId(id);
@@ -159,6 +174,7 @@ public class BetRecord extends UpdatableRecordImpl<BetRecord> {
         setBetPrice(betPrice);
         setCreatedAt(createdAt);
         setBetEndsAt(betEndsAt);
+        setStatus(status);
         resetTouchedOnNotNull();
     }
 }
