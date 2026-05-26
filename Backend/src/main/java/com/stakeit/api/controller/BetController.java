@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/Bets")
@@ -16,6 +17,7 @@ import java.util.List;
 public class BetController {
 
     private final BetService betService;
+    private static final int PAGE_SIZE = 6;
 
     @PostMapping("/CreateBet")
     public ResponseEntity<?> createBet(
@@ -43,15 +45,26 @@ public class BetController {
     }
 
     @PostMapping("/JoinBet")
-    public String joinBet(
-            @RequestParam Integer betId,
-            @RequestParam Integer userId
-    ) {
+    public String joinBet(@RequestParam Integer betId, @RequestParam Integer userId) {
         return betService.joinBet(betId, userId);
     }
 
-    @GetMapping("/ReadBet")
-    public BetEntity readBet(@RequestParam Integer betId) {
-        return betService.readBet(betId);
+        @GetMapping("/ReadBet")
+        public BetEntity readBet(@RequestParam Integer betId) {
+            return betService.readBet(betId);
+        }
+
+    @GetMapping("/GetBetsPerPage")
+    public ResponseEntity<Map<String, Object>> getBets(@RequestParam(name = "page", defaultValue = "1") Integer pageNr
+    ) {
+        List<BetEntity> bets = betService.readBetsPage(pageNr);
+
+        int totalBets = betService.countOpenBets();
+        int totalPages = (int) Math.ceil((double) totalBets / PAGE_SIZE);
+
+        return ResponseEntity.ok(Map.of(
+                "bets", bets,
+                "totalPages", totalPages
+        ));
     }
 }

@@ -33,13 +33,20 @@ public class JWTAuthConfig {
                 .cors(Customizer.withDefaults())
 
                 .authorizeHttpRequests(auth -> auth
-        .requestMatchers("/error").permitAll()
-        .requestMatchers("/Auth/**").permitAll()
-        .requestMatchers("/auth/**").permitAll()
-        .requestMatchers("/Bets/AllBets").permitAll()
-        .requestMatchers("/Bets/CreateBet").authenticated()
-        .anyRequest().authenticated()
-)
+                        .requestMatchers("/Auth/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
+
+                        .requestMatchers("/Bets/GetBetsPerPage").permitAll()
+                        .requestMatchers("/Bets/AllBets").permitAll()
+                        .requestMatchers("/Bets/ReadBet").permitAll()
+
+                        .requestMatchers("/Bets/CreateBet").authenticated()
+                        .requestMatchers("/Bets/JoinBet").authenticated()
+                        .requestMatchers("/Bets/OwnBets").authenticated()
+                        .requestMatchers("/Bets/JoinedBets").authenticated()
+
+                        .anyRequest().authenticated()
+                )
 
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
