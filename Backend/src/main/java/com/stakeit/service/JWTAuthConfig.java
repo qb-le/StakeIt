@@ -27,8 +27,16 @@ public class JWTAuthConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/Auth/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
+
+                        .requestMatchers("/Bets/GetBetsPerPage").permitAll()
                         .requestMatchers("/Bets/AllBets").permitAll()
+                        .requestMatchers("/Bets/ReadBet").permitAll()
+
                         .requestMatchers("/Bets/CreateBet").authenticated()
+                        .requestMatchers("/Bets/JoinBet").authenticated()
+                        .requestMatchers("/Bets/OwnBets").authenticated()
+                        .requestMatchers("/Bets/JoinedBets").authenticated()
+
                         .anyRequest().authenticated()
                 )
 

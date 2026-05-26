@@ -27,6 +27,14 @@ public class BetService {
         return repository.readAllBets();
     }
 
+    public List<BetEntity> readBetsPage(Integer page){
+        return repository.readBetsPage(page);
+    }
+
+    public Integer countOpenBets() {
+        return repository.countOpenBets();
+    }
+
     public List<BetEntity> readOwnBets(Integer createdBy) {
         return repository.readOwnBets(createdBy);
     }

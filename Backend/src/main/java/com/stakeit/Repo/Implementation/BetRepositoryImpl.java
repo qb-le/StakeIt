@@ -25,7 +25,29 @@ public class BetRepositoryImpl implements BetRepository {
         return dsl.selectFrom(BET)
                 .where(BET.STATUS.eq("OPEN"))
                 .and(BET.BET_ENDS_AT.gt(OffsetDateTime.now()))
+                .orderBy(BET.CREATED_AT.desc())
                 .fetchInto(BetEntity.class);
+    }
+
+    public List<BetEntity> readBetsPage(Integer page) {
+        Integer pageSize = 6;
+        Integer offset = (page - 1) * pageSize;
+
+        return dsl.selectFrom(BET)
+                .where(BET.STATUS.eq("OPEN"))
+                .and(BET.BET_ENDS_AT.gt(OffsetDateTime.now()))
+                .orderBy(BET.CREATED_AT.desc())
+                .limit(pageSize)
+                .offset(offset)
+                .fetchInto(BetEntity.class);
+    }
+
+    public Integer countOpenBets() {
+        return dsl.fetchCount(
+                dsl.selectFrom(BET)
+                        .where(BET.STATUS.eq("OPEN"))
+                        .and(BET.BET_ENDS_AT.gt(OffsetDateTime.now()))
+        );
     }
 
     public void closeExpiredBets() {
