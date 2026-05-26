@@ -6,8 +6,8 @@ CREATE TABLE gambler (
     wallet_balance NUMERIC(12,2) NOT NULL DEFAULT 0,
     refresh_token TEXT,
     refresh_token_expiry TIMESTAMPTZ,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    );
 
 CREATE TABLE bet (
     id SERIAL PRIMARY KEY,
@@ -17,6 +17,7 @@ CREATE TABLE bet (
     bet_price NUMERIC(4,2) NOT NULL CHECK (bet_price > 0),
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     bet_ends_at TIMESTAMPTZ,
+    status varchar(50) NOT NULL DEFAULT 'OPEN',
 
     CONSTRAINT fk_bet_created_by
         FOREIGN KEY (created_by)
