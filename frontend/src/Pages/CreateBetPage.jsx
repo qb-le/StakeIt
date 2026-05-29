@@ -11,41 +11,55 @@ function CreateBetPage() {
   const [betEndsAt, setBetEndsAt] = useState("");
   const [error, setError] = useState("");
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+async function handleSubmit(e) {
+  e.preventDefault();
 
-    const accessToken = localStorage.getItem("accessToken");
-    console.log("accessToken from localStorage:", accessToken);
+  const gamblerId = localStorage.getItem("gamblerId");
+  const accessToken = localStorage.getItem("accessToken");
 
-    if (!accessToken) {
-      navigate("/login");
-      return;
-    }
-
-    try {
-      const response = await fetch("/api/Bets/CreateBet", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({
-          title,
-          description,
-          betPrice: Number(betPrice),
-          betEndsAt,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create bet");
-      }
-
-      navigate("/");
-    } catch (err) {
-      setError(err.message);
-    }
+  if (!accessToken) {
+    navigate("/login");
+    return;
   }
+
+  if (!gamblerId) {
+    setError("Could not find user id. Please log in again.");
+    return;
+  }
+
+  setError("");
+
+  try {
+    const response = await fetch(`/api/Bets/CreateBet?gamblerId=${gamblerId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({
+        title,
+        description,
+        betPrice: Number(betPrice),
+        betEndsAt: new Date(betEndsAt).toISOString(),
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || "Failed to create bet");
+    }
+
+    const data = await response.json();
+
+    if (!data.checkoutUrl) {
+      throw new Error("No Stripe checkout URL returned");
+    }
+
+    window.location.href = data.checkoutUrl;
+  } catch (err) {
+    setError(err.message);
+  }
+}
 
   return (
     <div className="create-bet-page">
@@ -111,7 +125,7 @@ function CreateBetPage() {
             </button>
 
             <button type="submit" className="create-bet-submit">
-              Create Bet
+              Continue to Payment
             </button>
           </div>
         </form>

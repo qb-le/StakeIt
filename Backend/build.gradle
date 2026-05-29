@@ -40,6 +40,8 @@ dependencies {
     jooqCodegen 'org.jooq:jooq-codegen:3.20.5'
     jooqCodegen 'org.postgresql:postgresql:42.7.10'
 
+    implementation 'com.stripe:stripe-java:32.1.0'
+
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

@@ -1,10 +1,10 @@
 package com.stakeit.api.controller;
 
 import com.stakeit.RequestDTO.CreateBetRequest;
+import com.stakeit.ResponseDTO.CreateBetResponse;
 import com.stakeit.entity.BetEntity;
 import com.stakeit.service.BetService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,13 +20,11 @@ public class BetController {
     private static final int PAGE_SIZE = 6;
 
     @PostMapping("/CreateBet")
-    public ResponseEntity<?> createBet(
+    public CreateBetResponse createBet(
             @RequestBody CreateBetRequest request,
-            Authentication authentication
+            @RequestParam Integer gamblerId
     ) {
-        Integer gamblerId = (Integer) authentication.getPrincipal();
-
-        return ResponseEntity.ok(betService.createBet(request, gamblerId));
+        return betService.createBet(request, gamblerId);
     }
 
     @GetMapping("/OwnBets")

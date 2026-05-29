@@ -6,7 +6,9 @@ import com.stakeit.ResponseDTO.CreateBetResponse;
 import com.stakeit.entity.BetEntity;
 import com.stakeit.mapper.BetMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -16,10 +18,37 @@ public class BetService {
 
     private final BetRepository repository;
     private final BetMapper betMapper;
+    private final StripeService stripe;
 
     public CreateBetResponse createBet(CreateBetRequest request, Integer gamblerId) {
-         BetEntity betEntity = betMapper.toEntity(request);
-        return repository.createBet(betEntity, gamblerId);
+        System.out.println("CREATE BET START");
+        System.out.println("gamblerId = " + gamblerId);
+
+        BetEntity betEntity = betMapper.toEntity(request);
+        betEntity.setStatus("PENDING_PAYMENT");
+
+        CreateBetResponse savedBet = repository.createBet(betEntity, gamblerId);
+
+        try {
+            String checkoutUrl = stripe.createCreateBetCheckoutSession(
+                    savedBet.getId(),
+                    savedBet.getTitle(),
+                    savedBet.getBetPrice()
+            );
+
+            savedBet.setCheckoutUrl(checkoutUrl);
+            return savedBet;
+
+        } catch (Exception e) {
+            System.out.println("STRIPE CHECKOUT FAILED");
+            e.printStackTrace();
+
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Could not create Stripe checkout session",
+                    e
+            );
+        }
     }
 
     public List<BetEntity> readBets() {
@@ -27,7 +56,7 @@ public class BetService {
         return repository.readAllBets();
     }
 
-    public List<BetEntity> readBetsPage(Integer page){
+    public List<BetEntity> readBetsPage(Integer page) {
         return repository.readBetsPage(page);
     }
 
@@ -49,5 +78,9 @@ public class BetService {
 
     public BetEntity readBet(Integer betId) {
         return repository.readBet(betId);
+    }
+
+    public void activateBetAfterPayment(Integer betId) {
+        repository.updateBetStatus(betId, "OPEN");
     }
 }

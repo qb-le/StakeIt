@@ -5,6 +5,8 @@ import LoginPage from "./Pages/LoginPage";
 import RegisterPage from "./Pages/RegisterPage";
 import ProfilePage from "./Pages/ProfilePage";
 import CreateBetPage from "./Pages/CreateBetPage";
+import PaymentSuccess from "./Pages/PaymentSuccess";
+import PaymentCancelled from "./Pages/PaymentCancelled";
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/create-bet" element={<CreateBetPage />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/payment-cancelled" element={<PaymentCancelled />} />
       </Routes>
     </MainLayout>
   );

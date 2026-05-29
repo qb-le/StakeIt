@@ -72,10 +72,9 @@ public class BetRepositoryImpl implements BetRepository {
                 .set(BET.DESCRIPTION, request.getDescription())
                 .set(BET.BET_PRICE, request.getBetPrice())
                 .set(BET.BET_ENDS_AT, request.getBetEndsAt())
-                .set(BET.STATUS, "OPEN")
+                .set(BET.STATUS, "PENDING_PAYMENT")
                 .returning()
                 .fetchOneInto(BetEntity.class);
-
 
         if (createdBet == null) {
             throw new RuntimeException("Failed to create bet");
@@ -87,11 +86,14 @@ public class BetRepositoryImpl implements BetRepository {
                 .fetchOneInto(String.class);
 
         return new CreateBetResponse(
+                createdBet.getId(),
                 createdBet.getTitle(),
                 createdBet.getDescription(),
                 createdBet.getBetPrice(),
                 createdBet.getBetEndsAt(),
-                creatorName);
+                creatorName,
+                createdBet.getStatus()
+        );
     }
 
     public List<BetEntity> readJoinedBets(Integer userId) {
@@ -102,7 +104,8 @@ public class BetRepositoryImpl implements BetRepository {
                         BET.DESCRIPTION,
                         BET.BET_PRICE,
                         BET.CREATED_AT,
-                        BET.BET_ENDS_AT
+                        BET.BET_ENDS_AT,
+                        BET.STATUS
                 )
                 .from(JOINED_USER)
                 .join(BET).on(JOINED_USER.BET_ID.eq(BET.ID))
@@ -123,5 +126,12 @@ public class BetRepositoryImpl implements BetRepository {
         return dsl.selectFrom(BET)
                 .where(BET.ID.eq(betId))
                 .fetchOneInto(BetEntity.class);
+    }
+
+    public void updateBetStatus(Integer betId, String status) {
+        dsl.update(BET)
+                .set(BET.STATUS, status)
+                .where(BET.ID.eq(betId))
+                .execute();
     }
 }
