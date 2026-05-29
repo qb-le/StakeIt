@@ -43,7 +43,7 @@ services:
     depends_on:
       - backend
     ports:
-      - "5173:80"
+      - "80:80"
 
 volumes:
   stakeit_postgres_data:
