@@ -43,14 +43,14 @@ public class BetController {
     }
 
     @PostMapping("/JoinBet")
-    public String joinBet(@RequestParam Integer betId, @RequestParam Integer userId) {
-        return betService.joinBet(betId, userId);
+    public String joinBet(@RequestParam Integer betId, @RequestParam Integer userId, @RequestParam Integer selectedOptionId) {
+        return betService.joinBet(betId, userId, selectedOptionId);
     }
 
-        @GetMapping("/ReadBet")
-        public BetEntity readBet(@RequestParam Integer betId) {
-            return betService.readBet(betId);
-        }
+    @GetMapping("/ReadBet")
+    public BetEntity readBet(@RequestParam Integer betId) {
+        return betService.readBet(betId);
+    }
 
     @GetMapping("/GetBetsPerPage")
     public ResponseEntity<Map<String, Object>> getBets(@RequestParam(name = "page", defaultValue = "1") Integer pageNr

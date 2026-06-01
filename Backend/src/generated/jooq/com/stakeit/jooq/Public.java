@@ -5,8 +5,9 @@ package com.stakeit.jooq;
 
 
 import com.stakeit.jooq.tables.Bet;
+import com.stakeit.jooq.tables.BetOption;
 import com.stakeit.jooq.tables.Gambler;
-import com.stakeit.jooq.tables.JoinedUser;
+import com.stakeit.jooq.tables.JoinedBet;
 
 import java.util.Arrays;
 import java.util.List;
@@ -36,14 +37,19 @@ public class Public extends SchemaImpl {
     public final Bet BET = Bet.BET;
 
     /**
+     * The table <code>public.bet_option</code>.
+     */
+    public final BetOption BET_OPTION = BetOption.BET_OPTION;
+
+    /**
      * The table <code>public.gambler</code>.
      */
     public final Gambler GAMBLER = Gambler.GAMBLER;
 
     /**
-     * The table <code>public.joined_user</code>.
+     * The table <code>public.joined_bet</code>.
      */
-    public final JoinedUser JOINED_USER = JoinedUser.JOINED_USER;
+    public final JoinedBet JOINED_BET = JoinedBet.JOINED_BET;
 
     /**
      * No further instances allowed
@@ -62,8 +68,9 @@ public class Public extends SchemaImpl {
     public final List<Table<?>> getTables() {
         return Arrays.asList(
             Bet.BET,
+            BetOption.BET_OPTION,
             Gambler.GAMBLER,
-            JoinedUser.JOINED_USER
+            JoinedBet.JOINED_BET
         );
     }
 }

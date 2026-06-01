@@ -9,6 +9,7 @@ function LandingPage() {
   const [joinedBetIds, setJoinedBetIds] = useState([]);
 
   const [selectedBet, setSelectedBet] = useState(null);
+  const [selectedOptionId, setSelectedOptionId] = useState(null);
   const [loadingSelectedBet, setLoadingSelectedBet] = useState(false);
 
   const [loading, setLoading] = useState(true);
@@ -98,10 +99,17 @@ function LandingPage() {
 
   async function handleReadBet(betId) {
     setLoadingSelectedBet(true);
+    setSelectedOptionId(null);
     setError("");
 
     try {
-      const response = await fetch(`/api/Bets/ReadBet?betId=${betId}`);
+      const accessToken = localStorage.getItem("accessToken");
+
+      const response = await fetch(`/api/Bets/ReadBet?betId=${betId}`, {
+        headers: {
+          Authorization: accessToken ? `Bearer ${accessToken}` : "",
+        },
+      });
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -120,55 +128,70 @@ function LandingPage() {
     }
   }
 
-  async function handleJoinBet(betId) {
-    const accessToken = localStorage.getItem("accessToken");
-    const gamblerId = localStorage.getItem("gamblerId");
+  async function handleJoinBet(betId, selectedOptionId) {
+  const accessToken = localStorage.getItem("accessToken");
+  const userId = localStorage.getItem("gamblerId");
 
-    if (!accessToken) {
-      navigate("/login");
-      return;
-    }
+  console.log("Joining bet with:", {
+    betId,
+    userId,
+    selectedOptionId,
+  });
 
-    if (!gamblerId) {
-      setError("Could not find user id. Please log in again.");
-      return;
-    }
+  if (!accessToken) {
+    navigate("/login");
+    return;
+  }
 
-    setJoiningBetId(betId);
-    setError("");
+  if (!userId) {
+    setError("Could not find user id. Please log in again.");
+    return;
+  }
 
-    try {
-      const response = await fetch(
-        `/api/Bets/JoinBet?betId=${betId}&userId=${gamblerId}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
+  if (!selectedOptionId) {
+    setError("Please choose an option before joining.");
+    return;
+  }
+
+  setJoiningBetId(betId);
+  setError("");
+
+  try {
+    const response = await fetch(
+      `/api/Bets/JoinBet?betId=${betId}&userId=${userId}&selectedOptionId=${selectedOptionId}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.log("Join bet error response:", errorText);
+
+      throw new Error(
+        errorText || `Failed to join bet: ${response.status}`
       );
+    }
 
-      if (!response.ok) {
-        const errorText = await response.text();
-
-        throw new Error(
-          `Failed to join bet: ${response.status} ${response.statusText} ${errorText}`
-        );
+    setJoinedBetIds((currentIds) => {
+      if (currentIds.includes(betId)) {
+        return currentIds;
       }
 
-      setJoinedBetIds((currentIds) => {
-        if (currentIds.includes(betId)) {
-          return currentIds;
-        }
+      return [...currentIds, betId];
+    });
 
-        return [...currentIds, betId];
-      });
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setJoiningBetId(null);
-    }
+    setSelectedBet(null);
+    setSelectedOptionId(null);
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setJoiningBetId(null);
   }
+}
 
   useEffect(() => {
     fetchBets(currentPage);
@@ -181,6 +204,11 @@ function LandingPage() {
 
   function goToNextPage() {
     setCurrentPage((page) => Math.min(page + 1, totalPages));
+  }
+
+  function closeBetModal() {
+    setSelectedBet(null);
+    setSelectedOptionId(null);
   }
 
   return (
@@ -246,10 +274,12 @@ function LandingPage() {
 
                 <button
                   type="button"
-                  className={`join-bet-button ${alreadyJoined ? "joined" : ""}`}
+                  className={`join-bet-button ${
+                    alreadyJoined ? "joined" : ""
+                  }`}
                   onClick={(event) => {
                     event.stopPropagation();
-                    handleJoinBet(bet.id);
+                    handleReadBet(bet.id);
                   }}
                   disabled={alreadyJoined || isJoining}
                 >
@@ -289,10 +319,7 @@ function LandingPage() {
       </section>
 
       {(selectedBet || loadingSelectedBet) && (
-        <div
-          className="bet-detail-overlay"
-          onClick={() => setSelectedBet(null)}
-        >
+        <div className="bet-detail-overlay" onClick={closeBetModal}>
           <div
             className="bet-detail-modal"
             onClick={(event) => event.stopPropagation()}
@@ -309,7 +336,7 @@ function LandingPage() {
                   <button
                     type="button"
                     className="close-detail-button"
-                    onClick={() => setSelectedBet(null)}
+                    onClick={closeBetModal}
                   >
                     ✕
                   </button>
@@ -341,6 +368,60 @@ function LandingPage() {
                 <div className="bet-detail-description">
                   <h3>Description</h3>
                   <p>{selectedBet.description || "No description provided."}</p>
+                </div>
+
+                <div className="bet-detail-options">
+                  <h3>Choose your option</h3>
+
+                  {(selectedBet.betOptions ?? selectedBet.bet_options ?? [])
+                    .length === 0 && (
+                    <p className="bets-message">
+                      No options found for this bet.
+                    </p>
+                  )}
+
+                  {(selectedBet.betOptions ?? selectedBet.bet_options ?? []).map(
+                    (option) => {
+                      const optionId = option.id;
+                      const optionText = option.optionText ?? option.option_text;
+
+                      return (
+                        <button
+                          key={optionId}
+                          type="button"
+                          className={`bet-option-choice ${
+                            selectedOptionId === optionId ? "selected" : ""
+                          }`}
+                          onClick={() => setSelectedOptionId(optionId)}
+                        >
+                          {optionText}
+                        </button>
+                      );
+                    }
+                  )}
+                </div>
+
+                <div className="bet-detail-actions">
+                  <button
+                    type="button"
+                    className={`join-bet-button ${
+                      joinedBetIds.includes(selectedBet.id) ? "joined" : ""
+                    }`}
+                    disabled={
+                      joinedBetIds.includes(selectedBet.id) ||
+                      joiningBetId === selectedBet.id ||
+                      !selectedOptionId
+                    }
+                    onClick={() =>
+                      handleJoinBet(selectedBet.id, selectedOptionId)
+                    }
+                  >
+                    {joinedBetIds.includes(selectedBet.id)
+                      ? "Joined already"
+                      : joiningBetId === selectedBet.id
+                      ? "Joining..."
+                      : "Confirm Join"}
+                  </button>
                 </div>
               </>
             )}

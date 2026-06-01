@@ -7,7 +7,7 @@ package com.stakeit.jooq.tables;
 import com.stakeit.jooq.Keys;
 import com.stakeit.jooq.Public;
 import com.stakeit.jooq.tables.Bet.BetPath;
-import com.stakeit.jooq.tables.JoinedUser.JoinedUserPath;
+import com.stakeit.jooq.tables.JoinedBet.JoinedBetPath;
 import com.stakeit.jooq.tables.records.GamblerRecord;
 
 import java.math.BigDecimal;
@@ -66,6 +66,11 @@ public class Gambler extends TableImpl<GamblerRecord> {
     public final TableField<GamblerRecord, Integer> ID = createField(DSL.name("id"), SQLDataType.INTEGER.nullable(false).identity(true), this, "");
 
     /**
+     * The column <code>public.gambler.name</code>.
+     */
+    public final TableField<GamblerRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR(255).nullable(false), this, "");
+
+    /**
      * The column <code>public.gambler.email</code>.
      */
     public final TableField<GamblerRecord, String> EMAIL = createField(DSL.name("email"), SQLDataType.VARCHAR(255).nullable(false), this, "");
@@ -78,7 +83,7 @@ public class Gambler extends TableImpl<GamblerRecord> {
     /**
      * The column <code>public.gambler.wallet_balance</code>.
      */
-    public final TableField<GamblerRecord, BigDecimal> WALLET_BALANCE = createField(DSL.name("wallet_balance"), SQLDataType.NUMERIC(4, 2).nullable(false).defaultValue(DSL.field(DSL.raw("0"), SQLDataType.NUMERIC)), this, "");
+    public final TableField<GamblerRecord, BigDecimal> WALLET_BALANCE = createField(DSL.name("wallet_balance"), SQLDataType.NUMERIC(12, 2).nullable(false).defaultValue(DSL.field(DSL.raw("0"), SQLDataType.NUMERIC)), this, "");
 
     /**
      * The column <code>public.gambler.refresh_token</code>.
@@ -94,11 +99,6 @@ public class Gambler extends TableImpl<GamblerRecord> {
      * The column <code>public.gambler.created_at</code>.
      */
     public final TableField<GamblerRecord, OffsetDateTime> CREATED_AT = createField(DSL.name("created_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).nullable(false).defaultValue(DSL.field(DSL.raw("now()"), SQLDataType.TIMESTAMPWITHTIMEZONE)), this, "");
-
-    /**
-     * The column <code>public.gambler.name</code>.
-     */
-    public final TableField<GamblerRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR(255), this, "");
 
     private Gambler(Name alias, Table<GamblerRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
@@ -194,17 +194,17 @@ public class Gambler extends TableImpl<GamblerRecord> {
         return _bet;
     }
 
-    private transient JoinedUserPath _joinedUser;
+    private transient JoinedBetPath _joinedBet;
 
     /**
-     * Get the implicit to-many join path to the <code>public.joined_user</code>
+     * Get the implicit to-many join path to the <code>public.joined_bet</code>
      * table
      */
-    public JoinedUserPath joinedUser() {
-        if (_joinedUser == null)
-            _joinedUser = new JoinedUserPath(this, null, Keys.JOINED_USER__FK_JOINED_USER_USER.getInverseKey());
+    public JoinedBetPath joinedBet() {
+        if (_joinedBet == null)
+            _joinedBet = new JoinedBetPath(this, null, Keys.JOINED_BET__FK_JOINED_BET_GAMBLER.getInverseKey());
 
-        return _joinedUser;
+        return _joinedBet;
     }
 
     @Override

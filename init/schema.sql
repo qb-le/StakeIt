@@ -6,7 +6,7 @@ CREATE TABLE gambler (
     wallet_balance NUMERIC(12,2) NOT NULL DEFAULT 0,
     refresh_token TEXT,
     refresh_token_expiry TIMESTAMPTZ,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
 
 CREATE TABLE bet (
@@ -25,20 +25,40 @@ CREATE TABLE bet (
         ON DELETE CASCADE
 );
 
-CREATE TABLE joined_user (
-    user_id INTEGER NOT NULL,
-    bet_id INTEGER NOT NULL,
-    joined_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+CREATE TABLE bet_option (
+    id SERIAL PRIMARY KEY,
+    bet_id INT NOT NULL,
+    option_text VARCHAR(200) NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-    PRIMARY KEY (user_id, bet_id),
-
-    CONSTRAINT fk_joined_user_user
-        FOREIGN KEY (user_id)
-        REFERENCES gambler(id)
-        ON DELETE CASCADE,
-
-    CONSTRAINT fk_joined_user_bet
+    CONSTRAINT fk_bet_option_bet
         FOREIGN KEY (bet_id)
         REFERENCES bet(id)
         ON DELETE CASCADE
+);
+
+CREATE TABLE joined_bet (
+    id SERIAL PRIMARY KEY,
+    gambler_id INT NOT NULL,
+    bet_id INT NOT NULL,
+    selected_option_id INT NOT NULL,
+    joined_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT fk_joined_bet_gambler
+        FOREIGN KEY (gambler_id)
+        REFERENCES gambler(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_joined_bet_bet
+        FOREIGN KEY (bet_id)
+        REFERENCES bet(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_joined_bet_option
+        FOREIGN KEY (selected_option_id)
+        REFERENCES bet_option(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT uq_gambler_joined_bet
+        UNIQUE (gambler_id, bet_id)
 );

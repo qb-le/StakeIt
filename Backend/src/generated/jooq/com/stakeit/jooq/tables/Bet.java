@@ -6,8 +6,9 @@ package com.stakeit.jooq.tables;
 
 import com.stakeit.jooq.Keys;
 import com.stakeit.jooq.Public;
+import com.stakeit.jooq.tables.BetOption.BetOptionPath;
 import com.stakeit.jooq.tables.Gambler.GamblerPath;
-import com.stakeit.jooq.tables.JoinedUser.JoinedUserPath;
+import com.stakeit.jooq.tables.JoinedBet.JoinedBetPath;
 import com.stakeit.jooq.tables.records.BetRecord;
 
 import java.math.BigDecimal;
@@ -100,7 +101,7 @@ public class Bet extends TableImpl<BetRecord> {
     /**
      * The column <code>public.bet.status</code>.
      */
-    public final TableField<BetRecord, String> STATUS = createField(DSL.name("status"), SQLDataType.VARCHAR(30).nullable(false).defaultValue(DSL.field(DSL.raw("'OPEN'::character varying"), SQLDataType.VARCHAR)), this, "");
+    public final TableField<BetRecord, String> STATUS = createField(DSL.name("status"), SQLDataType.VARCHAR(50).nullable(false).defaultValue(DSL.field(DSL.raw("'OPEN'::character varying"), SQLDataType.VARCHAR)), this, "");
 
     private Bet(Name alias, Table<BetRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
@@ -196,17 +197,30 @@ public class Bet extends TableImpl<BetRecord> {
         return _gambler;
     }
 
-    private transient JoinedUserPath _joinedUser;
+    private transient BetOptionPath _betOption;
 
     /**
-     * Get the implicit to-many join path to the <code>public.joined_user</code>
+     * Get the implicit to-many join path to the <code>public.bet_option</code>
      * table
      */
-    public JoinedUserPath joinedUser() {
-        if (_joinedUser == null)
-            _joinedUser = new JoinedUserPath(this, null, Keys.JOINED_USER__FK_JOINED_USER_BET.getInverseKey());
+    public BetOptionPath betOption() {
+        if (_betOption == null)
+            _betOption = new BetOptionPath(this, null, Keys.BET_OPTION__FK_BET_OPTION_BET.getInverseKey());
 
-        return _joinedUser;
+        return _betOption;
+    }
+
+    private transient JoinedBetPath _joinedBet;
+
+    /**
+     * Get the implicit to-many join path to the <code>public.joined_bet</code>
+     * table
+     */
+    public JoinedBetPath joinedBet() {
+        if (_joinedBet == null)
+            _joinedBet = new JoinedBetPath(this, null, Keys.JOINED_BET__FK_JOINED_BET_BET.getInverseKey());
+
+        return _joinedBet;
     }
 
     @Override

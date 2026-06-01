@@ -5,11 +5,13 @@ package com.stakeit.jooq;
 
 
 import com.stakeit.jooq.tables.Bet;
+import com.stakeit.jooq.tables.BetOption;
 import com.stakeit.jooq.tables.Gambler;
-import com.stakeit.jooq.tables.JoinedUser;
+import com.stakeit.jooq.tables.JoinedBet;
+import com.stakeit.jooq.tables.records.BetOptionRecord;
 import com.stakeit.jooq.tables.records.BetRecord;
 import com.stakeit.jooq.tables.records.GamblerRecord;
-import com.stakeit.jooq.tables.records.JoinedUserRecord;
+import com.stakeit.jooq.tables.records.JoinedBetRecord;
 
 import org.jooq.ForeignKey;
 import org.jooq.TableField;
@@ -31,15 +33,19 @@ public class Keys {
     // -------------------------------------------------------------------------
 
     public static final UniqueKey<BetRecord> BET_PKEY = Internal.createUniqueKey(Bet.BET, DSL.name("bet_pkey"), new TableField[] { Bet.BET.ID }, true);
+    public static final UniqueKey<BetOptionRecord> BET_OPTION_PKEY = Internal.createUniqueKey(BetOption.BET_OPTION, DSL.name("bet_option_pkey"), new TableField[] { BetOption.BET_OPTION.ID }, true);
     public static final UniqueKey<GamblerRecord> GAMBLER_EMAIL_KEY = Internal.createUniqueKey(Gambler.GAMBLER, DSL.name("gambler_email_key"), new TableField[] { Gambler.GAMBLER.EMAIL }, true);
     public static final UniqueKey<GamblerRecord> GAMBLER_PKEY = Internal.createUniqueKey(Gambler.GAMBLER, DSL.name("gambler_pkey"), new TableField[] { Gambler.GAMBLER.ID }, true);
-    public static final UniqueKey<JoinedUserRecord> JOINED_USER_PKEY = Internal.createUniqueKey(JoinedUser.JOINED_USER, DSL.name("joined_user_pkey"), new TableField[] { JoinedUser.JOINED_USER.USER_ID, JoinedUser.JOINED_USER.BET_ID }, true);
+    public static final UniqueKey<JoinedBetRecord> JOINED_BET_PKEY = Internal.createUniqueKey(JoinedBet.JOINED_BET, DSL.name("joined_bet_pkey"), new TableField[] { JoinedBet.JOINED_BET.ID }, true);
+    public static final UniqueKey<JoinedBetRecord> UQ_GAMBLER_JOINED_BET = Internal.createUniqueKey(JoinedBet.JOINED_BET, DSL.name("uq_gambler_joined_bet"), new TableField[] { JoinedBet.JOINED_BET.GAMBLER_ID, JoinedBet.JOINED_BET.BET_ID }, true);
 
     // -------------------------------------------------------------------------
     // FOREIGN KEY definitions
     // -------------------------------------------------------------------------
 
     public static final ForeignKey<BetRecord, GamblerRecord> BET__FK_BET_CREATED_BY = Internal.createForeignKey(Bet.BET, DSL.name("fk_bet_created_by"), new TableField[] { Bet.BET.CREATED_BY }, Keys.GAMBLER_PKEY, new TableField[] { Gambler.GAMBLER.ID }, true, ForeignKeyRule.CASCADE, ForeignKeyRule.NO_ACTION);
-    public static final ForeignKey<JoinedUserRecord, BetRecord> JOINED_USER__FK_JOINED_USER_BET = Internal.createForeignKey(JoinedUser.JOINED_USER, DSL.name("fk_joined_user_bet"), new TableField[] { JoinedUser.JOINED_USER.BET_ID }, Keys.BET_PKEY, new TableField[] { Bet.BET.ID }, true, ForeignKeyRule.CASCADE, ForeignKeyRule.NO_ACTION);
-    public static final ForeignKey<JoinedUserRecord, GamblerRecord> JOINED_USER__FK_JOINED_USER_USER = Internal.createForeignKey(JoinedUser.JOINED_USER, DSL.name("fk_joined_user_user"), new TableField[] { JoinedUser.JOINED_USER.USER_ID }, Keys.GAMBLER_PKEY, new TableField[] { Gambler.GAMBLER.ID }, true, ForeignKeyRule.CASCADE, ForeignKeyRule.NO_ACTION);
+    public static final ForeignKey<BetOptionRecord, BetRecord> BET_OPTION__FK_BET_OPTION_BET = Internal.createForeignKey(BetOption.BET_OPTION, DSL.name("fk_bet_option_bet"), new TableField[] { BetOption.BET_OPTION.BET_ID }, Keys.BET_PKEY, new TableField[] { Bet.BET.ID }, true, ForeignKeyRule.CASCADE, ForeignKeyRule.NO_ACTION);
+    public static final ForeignKey<JoinedBetRecord, BetRecord> JOINED_BET__FK_JOINED_BET_BET = Internal.createForeignKey(JoinedBet.JOINED_BET, DSL.name("fk_joined_bet_bet"), new TableField[] { JoinedBet.JOINED_BET.BET_ID }, Keys.BET_PKEY, new TableField[] { Bet.BET.ID }, true, ForeignKeyRule.CASCADE, ForeignKeyRule.NO_ACTION);
+    public static final ForeignKey<JoinedBetRecord, GamblerRecord> JOINED_BET__FK_JOINED_BET_GAMBLER = Internal.createForeignKey(JoinedBet.JOINED_BET, DSL.name("fk_joined_bet_gambler"), new TableField[] { JoinedBet.JOINED_BET.GAMBLER_ID }, Keys.GAMBLER_PKEY, new TableField[] { Gambler.GAMBLER.ID }, true, ForeignKeyRule.CASCADE, ForeignKeyRule.NO_ACTION);
+    public static final ForeignKey<JoinedBetRecord, BetOptionRecord> JOINED_BET__FK_JOINED_BET_OPTION = Internal.createForeignKey(JoinedBet.JOINED_BET, DSL.name("fk_joined_bet_option"), new TableField[] { JoinedBet.JOINED_BET.SELECTED_OPTION_ID }, Keys.BET_OPTION_PKEY, new TableField[] { BetOption.BET_OPTION.ID }, true, ForeignKeyRule.CASCADE, ForeignKeyRule.NO_ACTION);
 }

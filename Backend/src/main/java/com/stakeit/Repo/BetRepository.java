@@ -13,8 +13,10 @@ public interface BetRepository {
     Integer countOpenBets();
     List<BetEntity> readOwnBets(Integer createdBy);
     List<BetEntity> readJoinedBets(Integer userId);
-    String joinBet(Integer betId, Integer userId);
+    void joinBet(Integer gamblerId, Integer betId, Integer selectedOptionId);
     BetEntity readBet(Integer betId);
     void updateBetStatus(Integer betId, String status);
+    void createBetOptions(Integer betId, List<String> options);
+    Integer getBetCreatorId(Integer betId);
 
 }

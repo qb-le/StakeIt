@@ -9,57 +9,99 @@ function CreateBetPage() {
   const [description, setDescription] = useState("");
   const [betPrice, setBetPrice] = useState("");
   const [betEndsAt, setBetEndsAt] = useState("");
+
+  const [betOptions, setBetOptions] = useState(["", ""]);
+
   const [error, setError] = useState("");
 
-async function handleSubmit(e) {
-  e.preventDefault();
-
-  const gamblerId = localStorage.getItem("gamblerId");
-  const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    navigate("/login");
-    return;
+  function handleOptionChange(index, value) {
+    const updatedOptions = [...betOptions];
+    updatedOptions[index] = value;
+    setBetOptions(updatedOptions);
   }
 
-  if (!gamblerId) {
-    setError("Could not find user id. Please log in again.");
-    return;
+  function addOption() {
+    setBetOptions([...betOptions, ""]);
   }
 
-  setError("");
-
-  try {
-    const response = await fetch(`/api/Bets/CreateBet?gamblerId=${gamblerId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify({
-        title,
-        description,
-        betPrice: Number(betPrice),
-        betEndsAt: new Date(betEndsAt).toISOString(),
-      }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || "Failed to create bet");
+  function removeOption(index) {
+    if (betOptions.length <= 2) {
+      setError("A bet needs at least 2 options.");
+      return;
     }
 
-    const data = await response.json();
+    const updatedOptions = betOptions.filter((_, optionIndex) => optionIndex !== index);
+    setBetOptions(updatedOptions);
+  }
 
-    if (!data.checkoutUrl) {
-      throw new Error("No Stripe checkout URL returned");
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    const gamblerId = localStorage.getItem("gamblerId");
+    const accessToken = localStorage.getItem("accessToken");
+
+    if (!accessToken) {
+      navigate("/login");
+      return;
     }
 
-    window.location.href = data.checkoutUrl;
-  } catch (err) {
-    setError(err.message);
+    if (!gamblerId) {
+      setError("Could not find user id. Please log in again.");
+      return;
+    }
+
+    const cleanedOptions = betOptions
+      .map((option) => option.trim())
+      .filter((option) => option.length > 0);
+
+    if (cleanedOptions.length < 2) {
+      setError("Please enter at least 2 valid bet options.");
+      return;
+    }
+
+    const hasDuplicateOptions =
+      new Set(cleanedOptions.map((option) => option.toLowerCase())).size !==
+      cleanedOptions.length;
+
+    if (hasDuplicateOptions) {
+      setError("Bet options must be unique.");
+      return;
+    }
+
+    setError("");
+
+    try {
+      const response = await fetch(`/api/Bets/CreateBet?gamblerId=${gamblerId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          title,
+          description,
+          betPrice: Number(betPrice),
+          betEndsAt: new Date(betEndsAt).toISOString(),
+          betOptions: cleanedOptions,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Failed to create bet");
+      }
+
+      const data = await response.json();
+
+      if (!data.checkoutUrl) {
+        throw new Error("No Stripe checkout URL returned");
+      }
+
+      window.location.href = data.checkoutUrl;
+    } catch (err) {
+      setError(err.message);
+    }
   }
-}
 
   return (
     <div className="create-bet-page">
@@ -96,6 +138,8 @@ async function handleSubmit(e) {
             <input
               type="number"
               step="0.01"
+              min="0.01"
+              max="99.99"
               placeholder="5.00"
               value={betPrice}
               onChange={(e) => setBetPrice(e.target.value)}
@@ -111,6 +155,45 @@ async function handleSubmit(e) {
               onChange={(e) => setBetEndsAt(e.target.value)}
               required
             />
+          </div>
+
+          <div className="form-group">
+            <label>Bet options</label>
+
+            {betOptions.map((option, index) => (
+              <div className="bet-option-row" key={index}>
+                <input
+                  type="text"
+                  placeholder={
+                    index === 0
+                      ? "Yes"
+                      : index === 1
+                      ? "No"
+                      : `Option ${index + 1}`
+                  }
+                  value={option}
+                  onChange={(e) => handleOptionChange(index, e.target.value)}
+                  required
+                />
+
+                <button
+                  type="button"
+                  className="remove-option-button"
+                  onClick={() => removeOption(index)}
+                  disabled={betOptions.length <= 2}
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+
+            <button
+              type="button"
+              className="add-option-button"
+              onClick={addOption}
+            >
+              + Add option
+            </button>
           </div>
 
           {error && <p className="create-bet-error">{error}</p>}

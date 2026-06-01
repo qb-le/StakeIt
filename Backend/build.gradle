@@ -17,6 +17,13 @@ repositories {
     mavenCentral()
 }
 
+sonar {
+    properties {
+        property "sonar.projectKey", "qb-le_StakeIt"
+        property "sonar.organization", "qb-le"
+    }
+}
+
 ext {
     set('jooq.version', '3.20.5')
 }

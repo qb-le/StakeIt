@@ -158,3 +158,32 @@
     width: 100%;
   }
 }
+
+.bet-option-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.bet-option-row input {
+  flex: 1;
+}
+
+.add-option-button,
+.remove-option-button {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.add-option-button {
+  margin-top: 6px;
+}
+
+.remove-option-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
