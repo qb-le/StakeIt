@@ -100,14 +100,14 @@ public class BetService {
             );
         }
 
-        boolean alreadyJoined = repository.hasUserJoinedBet(userId, betId);
-
-        if (alreadyJoined) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "You already joined this bet"
-            );
-        }
+//        boolean alreadyJoined = repository.hasUserJoinedBet(userId, betId);
+//
+//        if (alreadyJoined) {
+//            throw new ResponseStatusException(
+//                    HttpStatus.BAD_REQUEST,
+//                    "You already joined this bet"
+//            );
+//        }
 
         repository.joinBet(userId, betId, selectedOptionId);
 
