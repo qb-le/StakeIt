@@ -3,6 +3,7 @@ package com.stakeit.Repo.Implementation;
 import com.stakeit.Repo.BetRepository;
 import com.stakeit.ResponseDTO.CreateBetResponse;
 import com.stakeit.entity.BetEntity;
+import com.stakeit.entity.BetOptions;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
@@ -107,25 +108,32 @@ public class BetRepositoryImpl implements BetRepository {
                         BET.BET_ENDS_AT,
                         BET.STATUS
                 )
-                .from(JOINED_USER)
-                .join(BET).on(JOINED_USER.BET_ID.eq(BET.ID))
-                .where(JOINED_USER.USER_ID.eq(userId))
+                .from(JOINED_BET)
+                .join(BET).on(JOINED_BET.BET_ID.eq(BET.ID))
+                .where(JOINED_BET.GAMBLER_ID.eq(userId))
                 .orderBy(BET.CREATED_AT.desc())
                 .fetchInto(BetEntity.class);
     }
-    public String joinBet(Integer betId, Integer userId) {
-        dsl.insertInto(JOINED_USER)
-                .set(JOINED_USER.BET_ID, betId)
-                .set(JOINED_USER.USER_ID, userId)
+    public void joinBet(Integer gamblerId, Integer betId, Integer selectedOptionId) {
+        dsl.insertInto(JOINED_BET)
+                .set(JOINED_BET.GAMBLER_ID, gamblerId)
+                .set(JOINED_BET.BET_ID, betId)
+                .set(JOINED_BET.SELECTED_OPTION_ID, selectedOptionId)
                 .execute();
-
-        return "User joined bet successfully";
     }
 
     public BetEntity readBet(Integer betId) {
-        return dsl.selectFrom(BET)
+        BetEntity bet = dsl.selectFrom(BET)
                 .where(BET.ID.eq(betId))
                 .fetchOneInto(BetEntity.class);
+
+        List<BetOptions> options = dsl.selectFrom(BET_OPTION)
+                .where(BET_OPTION.BET_ID.eq(betId))
+                .orderBy(BET_OPTION.ID.asc())
+                .fetchInto(BetOptions.class);
+
+        bet.setBetOptions(options);
+        return bet;
     }
 
     public void updateBetStatus(Integer betId, String status) {
@@ -133,5 +141,22 @@ public class BetRepositoryImpl implements BetRepository {
                 .set(BET.STATUS, status)
                 .where(BET.ID.eq(betId))
                 .execute();
+    }
+
+    public void createBetOptions(Integer betId, List<String> options) {
+        var inserts = options.stream()
+                .map(option -> dsl.insertInto(BET_OPTION)
+                        .set(BET_OPTION.BET_ID, betId)
+                        .set(BET_OPTION.OPTION_TEXT, option))
+                .toList();
+
+        dsl.batch(inserts).execute();
+    }
+
+    public Integer getBetCreatorId(Integer betId) {
+        return dsl.select(BET.CREATED_BY)
+                .from(BET)
+                .where(BET.ID.eq(betId))
+                .fetchOneInto(Integer.class);
     }
 }

@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Data
@@ -16,6 +17,7 @@ public class BetEntity {
     private String status;
     private OffsetDateTime createdAt;
     private OffsetDateTime betEndsAt;
+    private List<BetOptions> betOptions;
 
 
     public void setBetPrice(BigDecimal betPrice) {

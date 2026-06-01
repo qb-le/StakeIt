@@ -5,8 +5,9 @@ package com.stakeit.jooq;
 
 
 import com.stakeit.jooq.tables.Bet;
+import com.stakeit.jooq.tables.BetOption;
 import com.stakeit.jooq.tables.Gambler;
-import com.stakeit.jooq.tables.JoinedUser;
+import com.stakeit.jooq.tables.JoinedBet;
 
 
 /**
@@ -21,12 +22,17 @@ public class Tables {
     public static final Bet BET = Bet.BET;
 
     /**
+     * The table <code>public.bet_option</code>.
+     */
+    public static final BetOption BET_OPTION = BetOption.BET_OPTION;
+
+    /**
      * The table <code>public.gambler</code>.
      */
     public static final Gambler GAMBLER = Gambler.GAMBLER;
 
     /**
-     * The table <code>public.joined_user</code>.
+     * The table <code>public.joined_bet</code>.
      */
-    public static final JoinedUser JOINED_USER = JoinedUser.JOINED_USER;
+    public static final JoinedBet JOINED_BET = JoinedBet.JOINED_BET;
 }
