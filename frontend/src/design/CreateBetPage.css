@@ -9,9 +9,9 @@
 .create-bet-card {
   width: 100%;
   max-width: 720px;
+  padding: 2.5rem;
   background: #ffffff;
   border-radius: 28px;
-  padding: 2.5rem;
   box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
 }
 
@@ -21,56 +21,94 @@
 
 .create-bet-header h1 {
   margin: 0;
-  font-size: 2.2rem;
   color: #111827;
+  font-size: 2.2rem;
 }
 
 .create-bet-header p {
-  margin-top: 0.5rem;
+  margin: 0.5rem 0 0;
   color: #6b7280;
   font-size: 1rem;
 }
 
-.create-bet-form {
+.create-bet-form,
+.create-bet-form .form-group {
   display: flex;
   flex-direction: column;
+}
+
+.create-bet-form {
   gap: 1.4rem;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
+.create-bet-form .form-group {
   gap: 0.45rem;
 }
 
-.form-group label {
-  font-weight: 700;
+.create-bet-form label {
   color: #1f2937;
+  font-weight: 700;
 }
 
-.form-group input,
-.form-group textarea {
+.create-bet-form input,
+.create-bet-form textarea {
   width: 100%;
   padding: 0.9rem 1rem;
   border: 1px solid #d1d5db;
   border-radius: 16px;
-  font-size: 1rem;
   background: #f9fafb;
   color: #111827;
+  font-size: 1rem;
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
-.form-group textarea {
+.create-bet-form textarea {
   min-height: 130px;
   resize: vertical;
 }
 
-.form-group input:focus,
-.form-group textarea:focus {
+.create-bet-form input:focus,
+.create-bet-form textarea:focus {
   border-color: #111827;
   background: #ffffff;
   box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.08);
+}
+
+.bet-option-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.bet-option-row input {
+  flex: 1;
+}
+
+.add-option-button,
+.remove-option-button,
+.create-bet-submit,
+.create-bet-cancel {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.add-option-button,
+.remove-option-button {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+}
+
+.add-option-button {
+  margin-top: 6px;
+}
+
+.remove-option-button:disabled,
+.create-bet-submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 
 .create-bet-actions {
@@ -80,38 +118,33 @@
   margin-top: 1rem;
 }
 
-.create-bet-submit {
+.create-bet-submit,
+.create-bet-cancel {
   padding: 0.85rem 1.5rem;
-  border: none;
   border-radius: 999px;
+  font-size: 1rem;
+}
+
+.create-bet-submit {
+  border: none;
   background: #111827;
   color: #ffffff;
-  font-weight: 700;
-  font-size: 1rem;
-  cursor: pointer;
   transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
 .create-bet-submit:hover {
-  transform: translateY(-1px);
   opacity: 0.92;
+  transform: translateY(-1px);
 }
 
 .create-bet-submit:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
   transform: none;
 }
 
 .create-bet-cancel {
-  padding: 0.85rem 1.5rem;
   border: 1px solid #d1d5db;
-  border-radius: 999px;
   background: #ffffff;
   color: #374151;
-  font-weight: 700;
-  font-size: 1rem;
-  cursor: pointer;
   transition: background 0.15s ease;
 }
 
@@ -119,20 +152,21 @@
   background: #f3f4f6;
 }
 
-.create-bet-error {
-  padding: 0.9rem 1rem;
-  border-radius: 14px;
-  background: #fee2e2;
-  color: #991b1b;
-  font-weight: 600;
-}
-
+.create-bet-error,
 .create-bet-success {
   padding: 0.9rem 1rem;
   border-radius: 14px;
+  font-weight: 600;
+}
+
+.create-bet-error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.create-bet-success {
   background: #dcfce7;
   color: #166534;
-  font-weight: 600;
 }
 
 @media (max-width: 768px) {
@@ -149,41 +183,30 @@
     font-size: 1.8rem;
   }
 
+  .bet-option-row,
+  .create-bet-actions {
+    flex-direction: column;
+  }
+
   .create-bet-actions {
     flex-direction: column-reverse;
   }
 
+  .add-option-button,
+  .remove-option-button,
   .create-bet-submit,
   .create-bet-cancel {
     width: 100%;
   }
 }
 
-.bet-option-row {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  margin-bottom: 10px;
+.create-bet-helper {
+  margin: 0 0 0.5rem;
+  color: #6b7280;
+  font-size: 0.9rem;
 }
 
-.bet-option-row input {
-  flex: 1;
-}
-
-.add-option-button,
-.remove-option-button {
-  border: none;
-  border-radius: 8px;
-  padding: 10px 14px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.add-option-button {
-  margin-top: 6px;
-}
-
-.remove-option-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.bet-option-row input[type="radio"] {
+  flex: 0;
+  width: auto;
 }

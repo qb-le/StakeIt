@@ -1,7 +1,9 @@
 package com.stakeit.api.controller;
 
+import com.stakeit.Repo.Implementation.BetRepositoryImpl;
 import com.stakeit.RequestDTO.CreateBetRequest;
 import com.stakeit.ResponseDTO.CreateBetResponse;
+import com.stakeit.ResponseDTO.ReadJoinedBetsResponse;
 import com.stakeit.entity.BetEntity;
 import com.stakeit.service.BetService;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +22,9 @@ public class BetController {
     private static final int PAGE_SIZE = 6;
 
     @PostMapping("/CreateBet")
-    public CreateBetResponse createBet(
-            @RequestBody CreateBetRequest request,
-            @RequestParam Integer gamblerId
+    public CreateBetResponse createBet(@RequestBody CreateBetRequest request, @RequestParam Integer gamblerId, @RequestParam Integer creatorChoiceIndex
     ) {
-        return betService.createBet(request, gamblerId);
+        return betService.createBet(request, gamblerId, creatorChoiceIndex);
     }
 
     @GetMapping("/OwnBets")
@@ -38,7 +38,7 @@ public class BetController {
     }
 
     @GetMapping("/JoinedBets")
-    public List<BetEntity> readJoinedBets(@RequestParam Integer userId) {
+    public List<ReadJoinedBetsResponse> readJoinedBets(@RequestParam Integer userId) {
         return betService.readJoinedBets(userId);
     }
 
@@ -64,5 +64,10 @@ public class BetController {
                 "bets", bets,
                 "totalPages", totalPages
         ));
+    }
+
+    @GetMapping("/GetWinRate")
+    public Double readWins(@RequestParam Integer userId) {
+        return betService.calculateWinRate(userId);
     }
 }

@@ -1,28 +1,32 @@
 CREATE TABLE gambler (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    password_hash TEXT NOT NULL,
-    wallet_balance NUMERIC(12,2) NOT NULL DEFAULT 0,
-    refresh_token TEXT,
-    refresh_token_expiry TIMESTAMPTZ,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    );
+     id SERIAL PRIMARY KEY,
+     name VARCHAR(255) NOT NULL,
+     email VARCHAR(255) NOT NULL UNIQUE,
+     password_hash TEXT NOT NULL,
+     wallet_balance NUMERIC(12,2) NOT NULL DEFAULT 0,
+     refresh_token TEXT,
+     refresh_token_expiry TIMESTAMPTZ,
+     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
 
 CREATE TABLE bet (
-    id SERIAL PRIMARY KEY,
-    created_by INTEGER NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    bet_price NUMERIC(4,2) NOT NULL CHECK (bet_price > 0),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    bet_ends_at TIMESTAMPTZ,
-    status varchar(50) NOT NULL DEFAULT 'OPEN',
+     id SERIAL PRIMARY KEY,
+     created_by INTEGER NOT NULL,
+     title VARCHAR(255) NOT NULL,
+     description TEXT,
+     bet_price NUMERIC(4,2) NOT NULL CHECK (bet_price > 0),
+     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+     bet_ends_at TIMESTAMPTZ,
+     status VARCHAR(50) NOT NULL DEFAULT 'OPEN',
+     winning_option_id INT,
 
-    CONSTRAINT fk_bet_created_by
-        FOREIGN KEY (created_by)
-        REFERENCES gambler(id)
-        ON DELETE CASCADE
+     CONSTRAINT fk_bet_created_by
+         FOREIGN KEY (created_by)
+             REFERENCES gambler(id)
+             ON DELETE CASCADE,
+
+     CONSTRAINT chk_bet_status
+         CHECK (status IN ('PENDING_PAYMENT', 'OPEN', 'CLOSED', 'CANCELLED'))
 );
 
 CREATE TABLE bet_option (
@@ -33,32 +37,42 @@ CREATE TABLE bet_option (
 
     CONSTRAINT fk_bet_option_bet
         FOREIGN KEY (bet_id)
-        REFERENCES bet(id)
-        ON DELETE CASCADE
+            REFERENCES bet(id)
+            ON DELETE CASCADE
 );
+
+ALTER TABLE bet
+    ADD CONSTRAINT fk_bet_winning_option
+        FOREIGN KEY (winning_option_id)
+            REFERENCES bet_option(id)
+            ON DELETE SET NULL;
 
 CREATE TABLE joined_bet (
     id SERIAL PRIMARY KEY,
     gambler_id INT NOT NULL,
     bet_id INT NOT NULL,
     selected_option_id INT NOT NULL,
+    result VARCHAR(20) NOT NULL DEFAULT 'ONGOING',
     joined_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
     CONSTRAINT fk_joined_bet_gambler
         FOREIGN KEY (gambler_id)
-        REFERENCES gambler(id)
-        ON DELETE CASCADE,
+            REFERENCES gambler(id)
+            ON DELETE CASCADE,
 
     CONSTRAINT fk_joined_bet_bet
         FOREIGN KEY (bet_id)
-        REFERENCES bet(id)
-        ON DELETE CASCADE,
+            REFERENCES bet(id)
+            ON DELETE CASCADE,
 
     CONSTRAINT fk_joined_bet_option
         FOREIGN KEY (selected_option_id)
-        REFERENCES bet_option(id)
-        ON DELETE CASCADE,
+            REFERENCES bet_option(id)
+            ON DELETE CASCADE,
 
     CONSTRAINT uq_gambler_joined_bet
-        UNIQUE (gambler_id, bet_id)
+        UNIQUE (gambler_id, bet_id),
+
+    CONSTRAINT chk_joined_bet_result
+        CHECK (result IN ('ONGOING', 'WIN', 'LOSS'))
 );

@@ -11,6 +11,7 @@ function CreateBetPage() {
   const [betEndsAt, setBetEndsAt] = useState("");
 
   const [betOptions, setBetOptions] = useState(["", ""]);
+  const [creatorChoiceIndex, setCreatorChoiceIndex] = useState(null);
 
   const [error, setError] = useState("");
 
@@ -30,8 +31,17 @@ function CreateBetPage() {
       return;
     }
 
-    const updatedOptions = betOptions.filter((_, optionIndex) => optionIndex !== index);
+    const updatedOptions = betOptions.filter(
+      (_, optionIndex) => optionIndex !== index
+    );
+
     setBetOptions(updatedOptions);
+
+    if (creatorChoiceIndex === index) {
+      setCreatorChoiceIndex(null);
+    } else if (creatorChoiceIndex > index) {
+      setCreatorChoiceIndex(creatorChoiceIndex - 1);
+    }
   }
 
   async function handleSubmit(e) {
@@ -50,9 +60,14 @@ function CreateBetPage() {
       return;
     }
 
-    const cleanedOptions = betOptions
-      .map((option) => option.trim())
-      .filter((option) => option.length > 0);
+    const optionsWithOriginalIndex = betOptions
+      .map((option, index) => ({
+        text: option.trim(),
+        originalIndex: index,
+      }))
+      .filter((option) => option.text.length > 0);
+
+    const cleanedOptions = optionsWithOriginalIndex.map((option) => option.text);
 
     if (cleanedOptions.length < 2) {
       setError("Please enter at least 2 valid bet options.");
@@ -68,23 +83,40 @@ function CreateBetPage() {
       return;
     }
 
+    if (creatorChoiceIndex === null) {
+      setError("Please choose which option you are betting on.");
+      return;
+    }
+
+    const cleanedCreatorChoiceIndex = optionsWithOriginalIndex.findIndex(
+      (option) => option.originalIndex === creatorChoiceIndex
+    );
+
+    if (cleanedCreatorChoiceIndex === -1) {
+      setError("Your selected option is empty. Please choose a valid option.");
+      return;
+    }
+
     setError("");
 
     try {
-      const response = await fetch(`/api/Bets/CreateBet?gamblerId=${gamblerId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({
-          title,
-          description,
-          betPrice: Number(betPrice),
-          betEndsAt: new Date(betEndsAt).toISOString(),
-          betOptions: cleanedOptions,
-        }),
-      });
+      const response = await fetch(
+        `/api/Bets/CreateBet?gamblerId=${gamblerId}&creatorChoiceIndex=${cleanedCreatorChoiceIndex}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({
+            title,
+            description,
+            betPrice: Number(betPrice),
+            betEndsAt: new Date(betEndsAt).toISOString(),
+            betOptions: cleanedOptions,
+          }),
+        }
+      );
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -108,7 +140,7 @@ function CreateBetPage() {
       <div className="create-bet-card">
         <div className="create-bet-header">
           <h1>Create a Bet</h1>
-          <p>Start a new bet and let others join.</p>
+          <p>Start a new bet and choose the option you believe in.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="create-bet-form">
@@ -159,9 +191,19 @@ function CreateBetPage() {
 
           <div className="form-group">
             <label>Bet options</label>
+            <p className="create-bet-helper">
+              Select the circle next to the option you want to bet on.
+            </p>
 
             {betOptions.map((option, index) => (
               <div className="bet-option-row" key={index}>
+                <input
+                  type="radio"
+                  name="creatorChoice"
+                  checked={creatorChoiceIndex === index}
+                  onChange={() => setCreatorChoiceIndex(index)}
+                />
+
                 <input
                   type="text"
                   placeholder={

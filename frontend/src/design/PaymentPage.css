@@ -1,17 +1,17 @@
 .payment-page {
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   padding: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .payment-card {
-  max-width: 480px;
   width: 100%;
+  max-width: 480px;
   padding: 32px;
+  background: #ffffff;
   border-radius: 18px;
-  background: white;
   text-align: center;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
 }
@@ -27,8 +27,8 @@
 .payment-button {
   display: inline-block;
   padding: 12px 18px;
+  background: #111111;
   border-radius: 10px;
+  color: #ffffff;
   text-decoration: none;
-  background: #111;
-  color: white;
 }

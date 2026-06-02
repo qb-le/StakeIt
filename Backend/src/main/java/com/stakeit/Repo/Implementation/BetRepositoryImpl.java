@@ -2,6 +2,7 @@ package com.stakeit.Repo.Implementation;
 
 import com.stakeit.Repo.BetRepository;
 import com.stakeit.ResponseDTO.CreateBetResponse;
+import com.stakeit.ResponseDTO.ReadJoinedBetsResponse;
 import com.stakeit.entity.BetEntity;
 import com.stakeit.entity.BetOptions;
 import org.jooq.DSLContext;
@@ -97,28 +98,34 @@ public class BetRepositoryImpl implements BetRepository {
         );
     }
 
-    public List<BetEntity> readJoinedBets(Integer userId) {
+    public List<ReadJoinedBetsResponse> readJoinedBets(Integer userId) {
         return dsl.select(
-                        BET.ID,
-                        BET.CREATED_BY,
-                        BET.TITLE,
-                        BET.DESCRIPTION,
-                        BET.BET_PRICE,
-                        BET.CREATED_AT,
-                        BET.BET_ENDS_AT,
-                        BET.STATUS
+                        BET.ID.as("id"),
+                        BET.CREATED_BY.as("createdBy"),
+                        BET.TITLE.as("title"),
+                        BET.DESCRIPTION.as("description"),
+                        BET.BET_PRICE.as("betPrice"),
+                        BET.CREATED_AT.as("createdAt"),
+                        BET.BET_ENDS_AT.as("betEndsAt"),
+                        BET.STATUS.as("status"),
+
+                        JOINED_BET.SELECTED_OPTION_ID.as("selectedOptionId"),
+                        BET_OPTION.OPTION_TEXT.as("selectedOption")
                 )
                 .from(JOINED_BET)
                 .join(BET).on(JOINED_BET.BET_ID.eq(BET.ID))
+                .join(BET_OPTION).on(JOINED_BET.SELECTED_OPTION_ID.eq(BET_OPTION.ID))
                 .where(JOINED_BET.GAMBLER_ID.eq(userId))
                 .orderBy(BET.CREATED_AT.desc())
-                .fetchInto(BetEntity.class);
+                .fetchInto(ReadJoinedBetsResponse.class);
     }
+
     public void joinBet(Integer gamblerId, Integer betId, Integer selectedOptionId) {
         dsl.insertInto(JOINED_BET)
                 .set(JOINED_BET.GAMBLER_ID, gamblerId)
                 .set(JOINED_BET.BET_ID, betId)
                 .set(JOINED_BET.SELECTED_OPTION_ID, selectedOptionId)
+                .set(JOINED_BET.RESULT, "ONGOING")
                 .execute();
     }
 
@@ -143,14 +150,14 @@ public class BetRepositoryImpl implements BetRepository {
                 .execute();
     }
 
-    public void createBetOptions(Integer betId, List<String> options) {
-        var inserts = options.stream()
+    public List<BetOptions> createBetOptions(Integer betId, List<String> options) {
+        return options.stream()
                 .map(option -> dsl.insertInto(BET_OPTION)
                         .set(BET_OPTION.BET_ID, betId)
-                        .set(BET_OPTION.OPTION_TEXT, option))
+                        .set(BET_OPTION.OPTION_TEXT, option)
+                        .returning()
+                        .fetchOneInto(BetOptions.class))
                 .toList();
-
-        dsl.batch(inserts).execute();
     }
 
     public Integer getBetCreatorId(Integer betId) {
@@ -158,5 +165,31 @@ public class BetRepositoryImpl implements BetRepository {
                 .from(BET)
                 .where(BET.ID.eq(betId))
                 .fetchOneInto(Integer.class);
+    }
+
+    public boolean hasUserJoinedBet(Integer userId, Integer betId) {
+        return dsl.fetchExists(
+                dsl.selectOne()
+                        .from(JOINED_BET)
+                        .where(JOINED_BET.GAMBLER_ID.eq(userId))
+                        .and(JOINED_BET.BET_ID.eq(betId))
+        );
+    }
+
+    public Integer countWins(Integer userId) {
+        return dsl.selectCount()
+                .from(JOINED_BET)
+                .where(JOINED_BET.GAMBLER_ID.eq(userId))
+                .and(JOINED_BET.RESULT.eq("WIN"))
+                .fetchOne(0, Integer.class);
+    }
+
+    public Integer countFinishedJoinedBets(Integer userId) {
+        return dsl.selectCount()
+                .from(JOINED_BET)
+                .join(BET).on(JOINED_BET.BET_ID.eq(BET.ID))
+                .where(JOINED_BET.GAMBLER_ID.eq(userId))
+                .and(BET.STATUS.eq("CLOSED"))
+                .fetchOne(0, Integer.class);
     }
 }
