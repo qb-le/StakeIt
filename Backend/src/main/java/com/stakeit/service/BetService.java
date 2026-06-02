@@ -3,7 +3,9 @@ package com.stakeit.service;
 import com.stakeit.Repo.BetRepository;
 import com.stakeit.RequestDTO.CreateBetRequest;
 import com.stakeit.ResponseDTO.CreateBetResponse;
+import com.stakeit.ResponseDTO.ReadJoinedBetsResponse;
 import com.stakeit.entity.BetEntity;
+import com.stakeit.entity.BetOptions;
 import com.stakeit.mapper.BetMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,18 +22,42 @@ public class BetService {
     private final BetMapper betMapper;
     private final StripeService stripe;
 
-    public CreateBetResponse createBet(CreateBetRequest request, Integer gamblerId) {
+    public CreateBetResponse createBet(CreateBetRequest request, Integer gamblerId, Integer CreatorChoiceIndex) {
         System.out.println("CREATE BET START");
         System.out.println("gamblerId = " + gamblerId);
+
+        List<String> options = cleanOptions(request.getBetOptions());
+
+        if (options.size() < 2) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "A bet must have at least 2 options"
+            );
+        }
+
+        if (CreatorChoiceIndex == null || CreatorChoiceIndex < 0 ||  CreatorChoiceIndex >= options.size()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Creator choice is invalid"
+            );
+        }
 
         BetEntity betEntity = betMapper.toEntity(request);
         betEntity.setStatus("PENDING_PAYMENT");
 
         CreateBetResponse savedBet = repository.createBet(betEntity, gamblerId);
 
-        repository.createBetOptions(
+        List<BetOptions> createdOptions = repository.createBetOptions(
                 savedBet.getId(),
-                cleanOptions(request.getBetOptions())
+                options
+        );
+
+        BetOptions creatorSelectedOption = createdOptions.get(CreatorChoiceIndex);
+
+        repository.joinBet(
+                gamblerId,
+                savedBet.getId(),
+                creatorSelectedOption.getId()
         );
 
         try {
@@ -79,7 +105,7 @@ public class BetService {
         return repository.readOwnBets(createdBy);
     }
 
-    public List<BetEntity> readJoinedBets(Integer userId) {
+    public List<ReadJoinedBetsResponse> readJoinedBets(Integer userId) {
         return repository.readJoinedBets(userId);
     }
 
@@ -100,14 +126,14 @@ public class BetService {
             );
         }
 
-//        boolean alreadyJoined = repository.hasUserJoinedBet(userId, betId);
-//
-//        if (alreadyJoined) {
-//            throw new ResponseStatusException(
-//                    HttpStatus.BAD_REQUEST,
-//                    "You already joined this bet"
-//            );
-//        }
+        boolean alreadyJoined = repository.hasUserJoinedBet(userId, betId);
+
+        if (alreadyJoined) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "You already joined this bet"
+            );
+        }
 
         repository.joinBet(userId, betId, selectedOptionId);
 
@@ -120,5 +146,16 @@ public class BetService {
 
     public void activateBetAfterPayment(Integer betId) {
         repository.updateBetStatus(betId, "OPEN");
+    }
+
+    public double calculateWinRate(Integer userId) {
+        Integer wins = repository.countWins(userId);
+        Integer finishedBets = repository.countFinishedJoinedBets(userId);
+
+        if (finishedBets == null || finishedBets == 0) {
+            return 0;
+        }
+
+        return (wins * 100.0) / finishedBets;
     }
 }

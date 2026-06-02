@@ -1,125 +1,104 @@
 .login-page {
-  min-height: 100vh;
   width: 100%;
-  background: #f4f6f8;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  min-height: 100vh;
   padding: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   box-sizing: border-box;
+  background: #f4f6f8;
 }
 
 .login-card {
   width: 100%;
   max-width: 420px;
-  background: white;
-  border-radius: 24px;
   padding: 36px 32px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
   box-sizing: border-box;
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
 }
 
 .login-header {
-  text-align: center;
   margin-bottom: 28px;
+  text-align: center;
 }
 
-.login-card h1,
-.login-title {
+.login-card h1 {
   margin: 0 0 8px;
+  color: #111827;
   font-size: 32px;
   font-weight: 800;
-  color: #111827;
   text-align: center;
 }
 
-.login-header p,
-.login-subtitle {
+.login-header p {
   margin: 0;
+  color: #6b7280;
   font-size: 15px;
   line-height: 1.5;
-  color: #6b7280;
-  text-align: center;
+}
+
+.login-form,
+.login-form .form-group {
+  display: flex;
+  flex-direction: column;
 }
 
 .login-form {
-  display: flex;
-  flex-direction: column;
   gap: 18px;
 }
 
-/* Your JSX uses .form-group */
-.form-group,
-.login-field {
-  display: flex;
-  flex-direction: column;
+.login-form .form-group {
   gap: 8px;
 }
 
-.form-group label,
-.login-field label {
+.login-form label {
+  color: #374151;
   font-size: 14px;
   font-weight: 600;
-  color: #374151;
 }
 
-.form-group input,
-.login-field input {
+.login-form input {
   width: 100%;
+  padding: 14px 16px;
   box-sizing: border-box;
-
   border: 1px solid rgba(31, 41, 55, 0.14);
   border-radius: 15px;
-
   background: rgba(243, 244, 246, 0.75);
   color: #111827;
-
-  padding: 14px 16px;
   font-size: 15px;
-
   outline: none;
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    background 0.2s ease,
-    transform 0.15s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, transform 0.15s ease;
 }
 
-.form-group input::placeholder,
-.login-field input::placeholder {
+.login-form input::placeholder {
   color: rgba(107, 114, 128, 0.72);
 }
 
-.form-group input:hover,
-.login-field input:hover {
-  background: rgba(243, 244, 246, 0.95);
+.login-form input:hover {
   border-color: rgba(31, 41, 55, 0.22);
+  background: rgba(243, 244, 246, 0.95);
 }
 
-.form-group input:focus,
-.login-field input:focus {
-  background: rgba(255, 255, 255, 0.95);
+.login-form input:focus {
   border-color: rgba(37, 99, 235, 0.55);
+  background: rgba(255, 255, 255, 0.95);
   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
   transform: translateY(-1px);
 }
 
 .login-button {
   margin-top: 8px;
+  padding: 14px 18px;
   border: none;
   border-radius: 16px;
-  padding: 14px 18px;
   background: #2563eb;
-  color: white;
+  color: #ffffff;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-
-  transition:
-    transform 0.15s ease,
-    background 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .login-button:hover {
@@ -129,8 +108,8 @@
 }
 
 .login-button:active {
-  transform: translateY(0);
   box-shadow: none;
+  transform: translateY(0);
 }
 
 .login-button:disabled {
@@ -140,33 +119,32 @@
   transform: none;
 }
 
-.login-error {
+.login-error,
+.login-success {
   margin: 0;
-  background: #fee2e2;
-  color: #991b1b;
-  border: 1px solid #fecaca;
-  border-radius: 14px;
   padding: 12px 14px;
+  border-radius: 14px;
   font-size: 14px;
   font-weight: 500;
 }
 
+.login-error {
+  border: 1px solid #fecaca;
+  background: #fee2e2;
+  color: #991b1b;
+}
+
 .login-success {
-  margin: 0;
+  border: 1px solid #bbf7d0;
   background: #dcfce7;
   color: #166534;
-  border: 1px solid #bbf7d0;
-  border-radius: 14px;
-  padding: 12px 14px;
-  font-size: 14px;
-  font-weight: 500;
 }
 
 .login-footer {
   margin-top: 24px;
-  text-align: center;
-  font-size: 14px;
   color: #6b7280;
+  font-size: 14px;
+  text-align: center;
 }
 
 .login-footer button,
@@ -175,8 +153,8 @@
   background: none;
   color: #2563eb;
   font-weight: 700;
-  cursor: pointer;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .login-footer button:hover,
@@ -194,8 +172,7 @@
     border-radius: 20px;
   }
 
-  .login-card h1,
-  .login-title {
+  .login-card h1 {
     font-size: 28px;
   }
 }

@@ -13,11 +13,15 @@ function ProfilePage() {
   const [ownBets, setOwnBets] = useState([]);
   const [joinedBets, setJoinedBets] = useState([]);
 
+  const [winRate, setWinRate] = useState(0);
+
   const [loadingOwnBets, setLoadingOwnBets] = useState(false);
   const [loadingJoinedBets, setLoadingJoinedBets] = useState(false);
+  const [loadingWinRate, setLoadingWinRate] = useState(false);
 
   const [ownBetsError, setOwnBetsError] = useState("");
   const [joinedBetsError, setJoinedBetsError] = useState("");
+  const [winRateError, setWinRateError] = useState("");
 
   const [ownBetsPage, setOwnBetsPage] = useState(1);
   const [joinedBetsPage, setJoinedBetsPage] = useState(1);
@@ -90,8 +94,47 @@ function ProfilePage() {
       }
     }
 
+    async function fetchWinRate() {
+      setLoadingWinRate(true);
+      setWinRateError("");
+
+      try {
+        const gamblerId = localStorage.getItem("gamblerId");
+
+        const response = await fetch(
+          `/api/Bets/GetWinRate?userId=${gamblerId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          const errorText = await response.text();
+
+          throw new Error(
+            `Failed to fetch win rate: ${response.status} ${response.statusText} ${errorText}`
+          );
+        }
+
+        const data = await response.json();
+
+        // If backend returns a number like 50
+        setWinRate(data);
+
+        // If backend returns { winRate: 50 }, use this instead:
+        // setWinRate(data.winRate);
+      } catch (err) {
+        setWinRateError(err.message);
+      } finally {
+        setLoadingWinRate(false);
+      }
+    }
+
     fetchOwnBets();
     fetchJoinedBets();
+    fetchWinRate();
   }, [accessToken]);
 
   const ownBetsTotalPages = Math.max(
@@ -187,7 +230,13 @@ function ProfilePage() {
 
           <div className="profile-stat">
             <span className="stat-label">Win Rate</span>
-            <strong>Coming soon</strong>
+            <strong>
+              {loadingWinRate
+                ? "Loading..."
+                : winRateError
+                ? "Error"
+                : `${Number(winRate).toFixed(1)}%`}
+            </strong>
           </div>
         </div>
       </section>
@@ -217,7 +266,10 @@ function ProfilePage() {
               <div key={bet.id} className="profile-bet-row">
                 <div className="profile-bet-info">
                   <strong>{bet.title}</strong>
-                  <p>{bet.description}</p>
+
+                  {bet.status && (
+                    <p className="profile-bet-status">Status: {bet.status}</p>
+                  )}
                 </div>
 
                 <span className="profile-bet-price">
@@ -277,7 +329,18 @@ function ProfilePage() {
               <div key={bet.id} className="profile-bet-row">
                 <div className="profile-bet-info">
                   <strong>{bet.title}</strong>
-                  <p>{bet.description}</p>
+
+                  <p className="profile-bet-choice">
+                    <span>Your choice:{" "} {bet.selectedOption ?? "Unknown"} </span>
+                  </p>
+
+                  {bet.result && (
+                    <p className="profile-bet-status">Result: {bet.result}</p>
+                  )}
+
+                  {bet.status && (
+                    <p className="profile-bet-status">Status: {bet.status}</p>
+                  )}
                 </div>
 
                 <span className="profile-bet-price">
