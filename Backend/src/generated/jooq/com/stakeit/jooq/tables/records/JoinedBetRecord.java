@@ -81,10 +81,25 @@ public class JoinedBetRecord extends UpdatableRecordImpl<JoinedBetRecord> {
     }
 
     /**
+     * Setter for <code>public.joined_bet.result</code>.
+     */
+    public JoinedBetRecord setResult(String value) {
+        set(4, value);
+        return this;
+    }
+
+    /**
+     * Getter for <code>public.joined_bet.result</code>.
+     */
+    public String getResult() {
+        return (String) get(4);
+    }
+
+    /**
      * Setter for <code>public.joined_bet.joined_at</code>.
      */
     public JoinedBetRecord setJoinedAt(OffsetDateTime value) {
-        set(4, value);
+        set(5, value);
         return this;
     }
 
@@ -92,7 +107,7 @@ public class JoinedBetRecord extends UpdatableRecordImpl<JoinedBetRecord> {
      * Getter for <code>public.joined_bet.joined_at</code>.
      */
     public OffsetDateTime getJoinedAt() {
-        return (OffsetDateTime) get(4);
+        return (OffsetDateTime) get(5);
     }
 
     // -------------------------------------------------------------------------
@@ -118,13 +133,14 @@ public class JoinedBetRecord extends UpdatableRecordImpl<JoinedBetRecord> {
     /**
      * Create a detached, initialised JoinedBetRecord
      */
-    public JoinedBetRecord(Integer id, Integer gamblerId, Integer betId, Integer selectedOptionId, OffsetDateTime joinedAt) {
+    public JoinedBetRecord(Integer id, Integer gamblerId, Integer betId, Integer selectedOptionId, String result, OffsetDateTime joinedAt) {
         super(JoinedBet.JOINED_BET);
 
         setId(id);
         setGamblerId(gamblerId);
         setBetId(betId);
         setSelectedOptionId(selectedOptionId);
+        setResult(result);
         setJoinedAt(joinedAt);
         resetTouchedOnNotNull();
     }

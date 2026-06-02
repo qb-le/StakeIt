@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.jooq.Check;
 import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
@@ -35,6 +36,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.Internal;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 
@@ -79,6 +81,11 @@ public class JoinedBet extends TableImpl<JoinedBetRecord> {
      * The column <code>public.joined_bet.selected_option_id</code>.
      */
     public final TableField<JoinedBetRecord, Integer> SELECTED_OPTION_ID = createField(DSL.name("selected_option_id"), SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>public.joined_bet.result</code>.
+     */
+    public final TableField<JoinedBetRecord, String> RESULT = createField(DSL.name("result"), SQLDataType.VARCHAR(20).nullable(false).defaultValue(DSL.field(DSL.raw("'ONGOING'::character varying"), SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column <code>public.joined_bet.joined_at</code>.
@@ -206,6 +213,13 @@ public class JoinedBet extends TableImpl<JoinedBetRecord> {
             _betOption = new BetOptionPath(this, Keys.JOINED_BET__FK_JOINED_BET_OPTION, null);
 
         return _betOption;
+    }
+
+    @Override
+    public List<Check<JoinedBetRecord>> getChecks() {
+        return Arrays.asList(
+            Internal.createCheck(this, DSL.name("chk_joined_bet_result"), "(((result)::text = ANY ((ARRAY['ONGOING'::character varying, 'WIN'::character varying, 'LOSS'::character varying])::text[])))", true)
+        );
     }
 
     @Override

@@ -13,4 +13,5 @@ public class CreateBetRequest {
     private BigDecimal betPrice;
     private LocalDateTime betEndsAt;
     private List<String> betOptions;
+    private String creatorSelectedOption;
 }
