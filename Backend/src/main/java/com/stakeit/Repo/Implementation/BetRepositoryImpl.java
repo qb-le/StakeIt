@@ -6,6 +6,7 @@ import com.stakeit.ResponseDTO.ReadJoinedBetsResponse;
 import com.stakeit.entity.BetEntity;
 import com.stakeit.entity.BetOptions;
 import org.jooq.DSLContext;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.time.OffsetDateTime;
@@ -18,9 +19,11 @@ import static com.stakeit.jooq.Tables.GAMBLER;
 public class BetRepositoryImpl implements BetRepository {
 
     private final DSLContext dsl;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    public BetRepositoryImpl(DSLContext dsl) {
+    public BetRepositoryImpl(DSLContext dsl, SimpMessagingTemplate messagingTemplate) {
         this.dsl = dsl;
+        this.messagingTemplate = messagingTemplate;
     }
 
     public List<BetEntity> readAllBets() {
@@ -144,10 +147,24 @@ public class BetRepositoryImpl implements BetRepository {
     }
 
     public void updateBetStatus(Integer betId, String status) {
-        dsl.update(BET)
+        BetEntity updatedBet = dsl.update(BET)
                 .set(BET.STATUS, status)
                 .where(BET.ID.eq(betId))
-                .execute();
+                .returning()
+                .fetchOneInto(BetEntity.class);
+
+        if (updatedBet == null) {
+            throw new RuntimeException("Failed to update bet status");
+        }
+
+        messagingTemplate.convertAndSend("/topic/bets", new BetEntity(
+                updatedBet.getId(),
+                updatedBet.getTitle(),
+                updatedBet.getStatus(),
+                updatedBet.getBetPrice(),
+                updatedBet.getBetEndsAt(),
+                "Bet status updated"
+        ));
     }
 
     public List<BetOptions> createBetOptions(Integer betId, List<String> options) {
