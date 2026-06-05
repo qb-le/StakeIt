@@ -125,8 +125,7 @@ function CreateBetPage() {
 
       const data = await response.json();
 
-      if (!data.checkoutUrl || typeof data.checkoutUrl !== "string" || !data.checkoutUrl.startsWith("https://checkout.stripe.com/")
-          ) {
+      if (!data.checkoutUrl || typeof data.checkoutUrl !== "string") {
             throw new Error("No valid Stripe checkout URL returned");
           }
 
