@@ -125,9 +125,10 @@ function CreateBetPage() {
 
       const data = await response.json();
 
-      if (!data.checkoutUrl) {
-        throw new Error("No Stripe checkout URL returned");
-      }
+      if (!data.checkoutUrl || typeof data.checkoutUrl !== "string" || !data.checkoutUrl.startsWith("https://checkout.stripe.com/")
+          ) {
+            throw new Error("No valid Stripe checkout URL returned");
+          }
 
       window.location.href = data.checkoutUrl;
     } catch (err) {
