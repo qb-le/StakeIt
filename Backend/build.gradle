@@ -34,9 +34,7 @@ repositories {
     mavenCentral()
 }
 
-dependencyLocking {
-    lockAllConfigurations()
-}
+
 
 
 sonar {
@@ -78,6 +76,7 @@ dependencies {
     jooqCodegen 'org.postgresql:postgresql:42.7.10'
 
     implementation 'com.stripe:stripe-java:32.1.0'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
 
     compileOnly 'org.projectlombok:lombok'
@@ -138,4 +137,8 @@ tasks.named('test') {
         exceptionFormat "full"
         showStandardStreams = true
     }
+}
+
+dependencyLocking {
+    lockAllConfigurations()
 }
