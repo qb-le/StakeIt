@@ -130,7 +130,18 @@ function CreateBetPage() {
             throw new Error("No valid Stripe checkout URL returned");
           }
 
-      window.location.href = data.checkoutUrl;
+    const checkoutUrl = new URL(data.checkoutUrl);
+
+      const allowedStripeHosts = [
+        "checkout.stripe.com",
+        "billing.stripe.com"
+      ];
+
+      if (!allowedStripeHosts.includes(checkoutUrl.hostname)) {
+        throw new Error("Invalid checkout URL returned");
+      }
+
+window.location.assign(checkoutUrl.toString());
     } catch (err) {
       setError(err.message);
     }
