@@ -31,7 +31,6 @@ public class JWTAuth extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
 
-        // No token? Continue, but protected endpoints will be blocked later.
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
@@ -47,7 +46,7 @@ public class JWTAuth extends OncePerRequestFilter {
 
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(
-                            gamblerId, // principal
+                            gamblerId,
                             null,
                             List.of()
                     );
