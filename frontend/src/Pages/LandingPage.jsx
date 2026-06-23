@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
 import "../design/LandingPage.css";
 
 function LandingPage() {
@@ -19,6 +21,12 @@ function LandingPage() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  const currentPageRef = useRef(currentPage);
+
+  useEffect(() => {
+    currentPageRef.current = currentPage;
+  }, [currentPage]);
 
   function handleCreateBetClick() {
     const accessToken = localStorage.getItem("accessToken");
@@ -43,8 +51,11 @@ function LandingPage() {
     });
   }
 
-  async function fetchBets(page) {
-    setLoading(true);
+  async function fetchBets(page, showLoading = true) {
+    if (showLoading) {
+      setLoading(true);
+    }
+
     setError("");
 
     try {
@@ -69,7 +80,9 @@ function LandingPage() {
     } catch (err) {
       setError(err.message);
     } finally {
-      setLoading(false);
+      if (showLoading) {
+        setLoading(false);
+      }
     }
   }
 
@@ -129,74 +142,109 @@ function LandingPage() {
   }
 
   async function handleJoinBet(betId, selectedOptionId) {
-  const accessToken = localStorage.getItem("accessToken");
-  const userId = localStorage.getItem("gamblerId");
+    const accessToken = localStorage.getItem("accessToken");
+    const userId = localStorage.getItem("gamblerId");
 
-  console.log("Joining bet with:", {
-    betId,
-    userId,
-    selectedOptionId,
-  });
-
-  if (!accessToken) {
-    navigate("/login");
-    return;
-  }
-
-  if (!userId) {
-    setError("Could not find user id. Please log in again.");
-    return;
-  }
-
-  if (!selectedOptionId) {
-    setError("Please choose an option before joining.");
-    return;
-  }
-
-  setJoiningBetId(betId);
-  setError("");
-
-  try {
-    const response = await fetch(
-      `/api/Bets/JoinBet?betId=${betId}&userId=${userId}&selectedOptionId=${selectedOptionId}`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.log("Join bet error response:", errorText);
-
-      throw new Error(
-        errorText || `Failed to join bet: ${response.status}`
-      );
-    }
-
-    setJoinedBetIds((currentIds) => {
-      if (currentIds.includes(betId)) {
-        return currentIds;
-      }
-
-      return [...currentIds, betId];
+    console.log("Joining bet with:", {
+      betId,
+      userId,
+      selectedOptionId,
     });
 
-    setSelectedBet(null);
-    setSelectedOptionId(null);
-  } catch (err) {
-    setError(err.message);
-  } finally {
-    setJoiningBetId(null);
+    if (!accessToken) {
+      navigate("/login");
+      return;
+    }
+
+    if (!userId) {
+      setError("Could not find user id. Please log in again.");
+      return;
+    }
+
+    if (!selectedOptionId) {
+      setError("Please choose an option before joining.");
+      return;
+    }
+
+    setJoiningBetId(betId);
+    setError("");
+
+    try {
+      const response = await fetch(
+        `/api/Bets/JoinBet?betId=${betId}&userId=${userId}&selectedOptionId=${selectedOptionId}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log("Join bet error response:", errorText);
+
+        throw new Error(errorText || `Failed to join bet: ${response.status}`);
+      }
+
+      setJoinedBetIds((currentIds) => {
+        if (currentIds.includes(betId)) {
+          return currentIds;
+        }
+
+        return [...currentIds, betId];
+      });
+
+      setSelectedBet(null);
+      setSelectedOptionId(null);
+
+      fetchBets(currentPage, false);
+      fetchJoinedBetsForButtons();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setJoiningBetId(null);
+    }
   }
-}
 
   useEffect(() => {
     fetchBets(currentPage);
     fetchJoinedBetsForButtons();
   }, [currentPage]);
+
+  useEffect(() => {
+    const client = new Client({
+      webSocketFactory: () => new SockJS("/api/ws"),
+      reconnectDelay: 5000,
+
+      onConnect: () => {
+        console.log("Connected to live bet updates");
+
+        client.subscribe("/topic/bets", (message) => {
+          console.log("Live bet update received:", message.body);
+
+          if (message.body === "BET_UPDATED") {
+            fetchBets(currentPageRef.current, false);
+            fetchJoinedBetsForButtons();
+          }
+        });
+      },
+
+      onStompError: (frame) => {
+        console.error("WebSocket error:", frame);
+      },
+
+      onWebSocketError: (event) => {
+        console.error("WebSocket connection error:", event);
+      },
+    });
+
+    client.activate();
+
+    return () => {
+      client.deactivate();
+    };
+  }, []);
 
   function goToPreviousPage() {
     setCurrentPage((page) => Math.max(page - 1, 1));
@@ -383,7 +431,8 @@ function LandingPage() {
                   {(selectedBet.betOptions ?? selectedBet.bet_options ?? []).map(
                     (option) => {
                       const optionId = option.id;
-                      const optionText = option.optionText ?? option.option_text;
+                      const optionText =
+                        option.optionText ?? option.option_text;
 
                       return (
                         <button

@@ -46,6 +46,8 @@ public class JWTAuthConfig {
                         .requestMatchers("/Bets/OwnBets").authenticated()
                         .requestMatchers("/Bets/JoinedBets").authenticated()
 
+                        .requestMatchers(("/ws/**")).permitAll()
+
                         .requestMatchers("/Stripe/Webhook").permitAll()
 
 

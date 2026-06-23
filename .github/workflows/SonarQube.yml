@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    name: Build and analyze
+    name: Build, test, coverage and analyze
     runs-on: ubuntu-latest
 
     defaults:
@@ -26,6 +26,7 @@ jobs:
         with:
           java-version: 21
           distribution: zulu
+          cache: gradle
 
       - name: Cache SonarQube packages
         uses: actions/cache@v4
@@ -34,17 +35,10 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      - name: Cache Gradle packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('Backend/**/*.gradle*') }}
-          restore-keys: ${{ runner.os }}-gradle
-
       - name: Give Gradle permission
         run: chmod +x ./gradlew
 
-      - name: Build and analyze
+      - name: Build, test, coverage and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew build sonar --info
+        run: ./gradlew clean test jacocoTestReport sonar --info

@@ -19,6 +19,17 @@ public class BetEntity {
     private OffsetDateTime betEndsAt;
     private List<BetOptions> betOptions;
 
+    public BetEntity() {}
+
+    public BetEntity(Integer id, String title, String status, BigDecimal betPrice, OffsetDateTime betEndsAt, String betStatusUpdated) {
+        this.id = id;
+        this.title = title;
+        this.status = status;
+        this.betPrice = betPrice;
+        this.betEndsAt = betEndsAt;
+        this.status = betStatusUpdated;
+    }
+
 
     public void setBetPrice(BigDecimal betPrice) {
         try {
