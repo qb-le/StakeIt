@@ -125,23 +125,23 @@ function CreateBetPage() {
 
       const data = await response.json();
 
-      if (!data.checkoutUrl || typeof data.checkoutUrl !== "string" || !data.checkoutUrl.startsWith("https://checkout.stripe.com/")
-          ) {
-            throw new Error("No valid Stripe checkout URL returned");
-          }
+      if (
+        !data.checkoutUrl ||
+        typeof data.checkoutUrl !== "string" ||
+        !data.checkoutUrl.startsWith("https://checkout.stripe.com/")
+      ) {
+        throw new Error("No valid Stripe checkout URL returned");
+      }
 
-    const checkoutUrl = new URL(data.checkoutUrl);
+      const checkoutUrl = new URL(data.checkoutUrl);
 
-      const allowedStripeHosts = [
-        "checkout.stripe.com",
-        "billing.stripe.com"
-      ];
+      const allowedStripeHosts = ["checkout.stripe.com", "billing.stripe.com"];
 
       if (!allowedStripeHosts.includes(checkoutUrl.hostname)) {
         throw new Error("Invalid checkout URL returned");
       }
 
-window.location.assign(checkoutUrl.toString());
+      window.location.assign(checkoutUrl.toString());
     } catch (err) {
       setError(err.message);
     }
@@ -159,6 +159,7 @@ window.location.assign(checkoutUrl.toString());
           <div className="form-group">
             <label>Title</label>
             <input
+              data-testid="title"
               type="text"
               placeholder="Will Arsenal win?"
               value={title}
@@ -170,6 +171,7 @@ window.location.assign(checkoutUrl.toString());
           <div className="form-group">
             <label>Description</label>
             <textarea
+              data-testid="description"
               placeholder="Describe what people are betting on..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -180,6 +182,7 @@ window.location.assign(checkoutUrl.toString());
           <div className="form-group">
             <label>Bet price</label>
             <input
+              data-testid="bet-price"
               type="number"
               step="0.01"
               min="0.01"
@@ -194,6 +197,7 @@ window.location.assign(checkoutUrl.toString());
           <div className="form-group">
             <label>Bet ends at</label>
             <input
+              data-testid="bet-ends-at"
               type="datetime-local"
               value={betEndsAt}
               onChange={(e) => setBetEndsAt(e.target.value)}
@@ -210,6 +214,7 @@ window.location.assign(checkoutUrl.toString());
             {betOptions.map((option, index) => (
               <div className="bet-option-row" key={index}>
                 <input
+                  data-testid={`option-radio-${index}`}
                   type="radio"
                   name="creatorChoice"
                   checked={creatorChoiceIndex === index}
@@ -217,6 +222,7 @@ window.location.assign(checkoutUrl.toString());
                 />
 
                 <input
+                  data-testid={`option-${index}`}
                   type="text"
                   placeholder={
                     index === 0
@@ -231,6 +237,7 @@ window.location.assign(checkoutUrl.toString());
                 />
 
                 <button
+                  data-testid={`remove-option-${index}`}
                   type="button"
                   className="remove-option-button"
                   onClick={() => removeOption(index)}
@@ -242,6 +249,7 @@ window.location.assign(checkoutUrl.toString());
             ))}
 
             <button
+              data-testid="add-option"
               type="button"
               className="add-option-button"
               onClick={addOption}
@@ -250,10 +258,15 @@ window.location.assign(checkoutUrl.toString());
             </button>
           </div>
 
-          {error && <p className="create-bet-error">{error}</p>}
+          {error && (
+            <p data-testid="create-bet-error" className="create-bet-error">
+              {error}
+            </p>
+          )}
 
           <div className="create-bet-actions">
             <button
+              data-testid="cancel-create-bet"
               type="button"
               className="create-bet-cancel"
               onClick={() => navigate("/")}
@@ -261,7 +274,11 @@ window.location.assign(checkoutUrl.toString());
               Cancel
             </button>
 
-            <button type="submit" className="create-bet-submit">
+            <button
+              data-testid="submit-create-bet"
+              type="submit"
+              className="create-bet-submit"
+            >
               Continue to Payment
             </button>
           </div>
